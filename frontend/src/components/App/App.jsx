@@ -9,7 +9,6 @@ import Login from "../../pages/Login/Login";
 import ForgotPass from "../../pages/ForgotPass/ForgotPass";
 import { ProtectedRoute } from "../../services/PotectedRouter";
 import FreelancerAccount from "../FreelancerAccount/FreelancerAccount";
-import { Context } from "../../context/context"
 import "./App.css";
 
 function App() {
@@ -43,6 +42,7 @@ function App() {
           <Route path="/" element={<Layout/>}>
             <Route element={<ProtectedRoute/>}>
             <Route path="freelancer/:freelancerId" element={<FreelancerAccount />} />
+              <Route path="freelancer/:freelancerId" element={<FreelancerAccount />} />
               <Route path="freelancer/:freelancerId" element={<FreelancerAccount />} />
             </Route>
             <Route index element={<Main />} />
