@@ -1,6 +1,7 @@
 import React from "react";
 import Main from "../Main/Main";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
+import { Context } from "../../context/context";
 import Layout from "../../layout/Layout";
 import NotFound from "../../pages/NotFound/NotFound";
 import Register from "../../pages/Register/Register";
@@ -9,6 +10,7 @@ import ForgotPass from "../../pages/ForgotPass/ForgotPass";
 import { ProtectedRoute } from "../../services/PotectedRouter";
 import FreelancerAccount from "../FreelancerAccount/FreelancerAccount";
 import { Context } from "../../context/context"
+import "./App.css";
 
 function App() {
   const [authenticated, setAuthenticated] = React.useState(false);
@@ -41,6 +43,7 @@ function App() {
           <Route path="/" element={<Layout/>}>
             <Route element={<ProtectedRoute/>}>
             <Route path="freelancer/:freelancerId" element={<FreelancerAccount />} />
+              <Route path="freelancer/:freelancerId" element={<FreelancerAccount />} />
             </Route>
             <Route index element={<Main />} />
             <Route path="signup" element={<Register />} />
