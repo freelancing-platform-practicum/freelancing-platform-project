@@ -6,6 +6,7 @@ from django.db import models
 from PIL import Image
 
 from users.models import CustomerProfile as Client
+from users.models import Industry as Category
 from users.models import Stack
 from users.models import WorkerProfile as Freelancer
 
@@ -91,7 +92,7 @@ class Client(models.Model):
 '''
 
 
-class Category(models.Model):
+class JobCategory(models.Model):
     """
     Специализации.
     """

@@ -42,15 +42,15 @@ class JobViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update']:
-            permission_classes = (IsCustomerOrReadOnly,)
-        if self.action == 'response':
-            permission_classes = (IsFreelancer,)
+            permission_classes = [IsCustomerOrReadOnly,]
+        elif self.action == 'response':
+            permission_classes = [IsFreelancer,]
         else:
-            permission_classes = (IsAdminOrReadOnly,)
+            permission_classes = [IsAdminOrReadOnly,]
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user.customerprofile)
+        serializer.save(client_id=self.request.user.id)
 
     def perform_update(self, serializer):
         serializer.save()

@@ -34,7 +34,10 @@ class UserViewSet(viewsets.ModelViewSet):
         action in ['retrieve', 'me']  дополнительно проверяет роль
         пользователя и в зависимости от этого возвращает требуемый queryset
         """
-        if self.action in ['retrieve', 'me']:
+        # @ilgiz добавил проверку на авторизацию
+        if ((self.action in ['retrieve', 'me'])
+                and self.request.user.is_authenticated):
+
             if self.action == 'retrieve':
                 user = get_object_or_404(Member, id=self.kwargs.get('pk'))
             else:
@@ -63,7 +66,10 @@ class UserViewSet(viewsets.ModelViewSet):
             'POST_PATCH_worker': None
         }
         key = self.action
-        if key in ['retrieve', 'me']:
+        # @ilgiz Убрал if key in ['retrieve', 'me']:
+        # добавил проверка на авторизацию
+        if ((key in ['retrieve', 'me'])
+                and self.request.user.is_authenticated):
             if self.action == 'retrieve':
                 user = get_object_or_404(Member, id=self.kwargs.get('pk'))
             else:
@@ -94,12 +100,14 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         self.get_queryset()
-        user = get_object_or_404(Member, id=self.kwargs.get('pk'))
-        if user.is_customer and not user.is_worker:
-            queryset = get_object_or_404(CustomerProfile, user_id=user.id)
-        elif user.is_worker and not user.is_customer:
-            queryset = get_object_or_404(WorkerProfile, user_id=user.id)
-        serializer = self.get_serializer(queryset)
+        # добавил проверку на авторизацию
+        if self.request.user.is_authenticated:
+            user = get_object_or_404(Member, id=self.kwargs.get('pk'))
+            if user.is_customer and not user.is_worker:
+                queryset = get_object_or_404(CustomerProfile, user_id=user.id)
+            elif user.is_worker and not user.is_customer:
+                queryset = get_object_or_404(WorkerProfile, user_id=user.id)
+            serializer = self.get_serializer(queryset)
         return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):

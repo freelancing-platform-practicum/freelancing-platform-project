@@ -2,9 +2,9 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from api.utils import CustomBase64ImageField
-from orders.models import (CATEGORY_CHOICES, Category, Job, JobFile, Response,
-                           StackJob)
+from orders.models import CATEGORY_CHOICES, Job, JobFile, Response, StackJob
 from users.models import CustomerProfile as Client
+from users.models import Industry as Category
 from users.models import Stack
 from users.models import WorkerProfile as Freelancer
 
@@ -35,7 +35,7 @@ class FreelancerSerializer(serializers.ModelSerializer):
         fields = ('user',)
 
 
-class StackSerializer(serializers.ModelSerializer):
+class JobStackSerializer(serializers.ModelSerializer):
     """Стэк технологий."""
     class Meta:
         model = Stack
@@ -89,7 +89,7 @@ class RespondedSerializer(serializers.ModelSerializer):
 
 class JobListSerializer(serializers.ModelSerializer):
     """Получение списка заказов."""
-    stack = StackSerializer(many=True)
+    stack = JobStackSerializer(many=True)
     client = ClientSerializer()
     is_responded = serializers.SerializerMethodField()
 
@@ -145,7 +145,7 @@ class JobCreateSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
         many=True
     )
-    stack = StackSerializer(many=True,)
+    stack = JobStackSerializer(many=True,)
     job_files = JobFileSerializer(many=True,)
 
     class Meta:

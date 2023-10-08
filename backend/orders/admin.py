@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from orders.models import Category, Job, Response
+from orders.models import Job, Response
 
 '''
 # Временные модели пользователей. Удалить после внедрения моделей
@@ -34,7 +34,6 @@ class StackAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
-'''
 
 
 @admin.register(Category)
@@ -44,6 +43,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
+'''
 
 
 @admin.register(Job)
