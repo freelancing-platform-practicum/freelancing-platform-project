@@ -5,8 +5,9 @@ from djoser import serializers as djoser_serializers
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 
-from .models import (Activity, CustomerProfile, Industry, Stack, WorkerProfile, Contacts,
-                     FreelancerActivity, FreelancerStack)
+from .models import (Activity, CustomerProfile, Industry, Stack, WorkerProfile,
+                     Contacts,
+                     FreelancerActivity, FreelancerStack, Reviews)
 
 User = get_user_model()
 
@@ -150,7 +151,7 @@ class WorkerProfileCreateSerializer(serializers.ModelSerializer):
             )
         profile.save()
         return profile
-    
+
     def update(self, instance, validated_data):
         contacts = validated_data.pop('contacts_set')
         activityes = validated_data.pop('activity')
@@ -177,3 +178,12 @@ class WorkerProfileCreateSerializer(serializers.ModelSerializer):
                 contact=contact['contact']
             )
         return super().update(instance, validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    on_review = serializers.StringRelatedField(read_only=True)
+    reviewer = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Reviews
+        fields = ('on_review', 'reviewer', 'rank', 'text')

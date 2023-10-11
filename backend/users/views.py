@@ -5,7 +5,6 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from drf_spectacular.utils import extend_schema
 
 from .models import CustomerProfile, Member, WorkerProfile
 from .permissions import IsUser
@@ -15,7 +14,8 @@ from .serializers import (GetCustomerProfileSerializer, NewEmailSerializer,
                           SendEmailResetSerializer, SetPasswordSerializer,
                           UserCreateSerializer, UserViewSerialiser,
                           WorkerProfileListSerializer,
-                          WorkerProfileCreateSerializer)
+                          WorkerProfileCreateSerializer,
+                          ReviewSerializer)
 
 User = get_user_model()
 
@@ -194,9 +194,24 @@ class FreelancerViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "put", "delete"]
     serializer_class = WorkerProfileListSerializer
     permission_classes = [IsAuthenticated, ]
-    
+
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
             return WorkerProfileListSerializer
         if self.action == 'create' or self.action == 'update':
             return WorkerProfileCreateSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    http_method_names = ["get", "post", "put", "delete"]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ReviewSerializer
+
+    def get_user(self):
+        return get_object_or_404(Member, id=self.kwargs.get('user_id'))
+
+    def get_queryset(self):
+        return self.get_user().reviews.all()
+
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user, on_review=self.get_user())

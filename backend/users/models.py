@@ -256,10 +256,10 @@ class FreelancerActivity(models.Model):
 
 
 class Reviews(models.Model):
-    author = models.ForeignKey(Member, on_delete=models.CASCADE,
-                               related_name='reviewer')
-    user = models.ForeignKey(Member, on_delete=models.CASCADE,
-                             related_name='reviews')
+    on_review = models.ForeignKey(Member, on_delete=models.CASCADE,
+                                  related_name='reviews')
+    reviewer = models.ForeignKey(Member, on_delete=models.CASCADE,
+                                 related_name='reviewer')
     text = models.TextField(
         max_length=500,
         blank=True,
