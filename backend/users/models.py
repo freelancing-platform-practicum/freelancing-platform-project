@@ -6,7 +6,7 @@ from .usermanager import UserManager
 
 
 CONTACT_TYPE = [
-    ('Phone number','Phone number'),
+    ('Phone number', 'Phone number'),
     ('Email', 'Email'),
     ('Telegram', 'Telegram'),
     ('Other', 'Other')
@@ -252,4 +252,25 @@ class FreelancerActivity(models.Model):
     freelancer = models.ForeignKey(WorkerProfile, on_delete=models.CASCADE,
                                    related_name='freelancers_activity')
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE,
-                              related_name='freelancers_activity')
+                                 related_name='freelancers_activity')
+
+
+class Reviews(models.Model):
+    author = models.ForeignKey(Member, on_delete=models.CASCADE,
+                               related_name='reviewer')
+    user = models.ForeignKey(Member, on_delete=models.CASCADE,
+                             related_name='reviews')
+    text = models.TextField(
+        max_length=500,
+        blank=True,
+        verbose_name='Отзыв')
+
+    class Rank(models.IntegerChoices):
+        ONE = 1, 'One'
+        TWO = 2, 'Two'
+        THREE = 3, 'Three'
+        FOUR = 4, 'Four'
+        FIVE = 5, 'Five'
+
+    rank = models.IntegerField(choices=Rank.choices,
+                               blank=True)
