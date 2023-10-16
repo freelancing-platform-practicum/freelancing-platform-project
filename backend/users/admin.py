@@ -5,12 +5,6 @@ from .models import (Member, Stack,
                      Contacts)
 
 
-@admin.register(WorkerProfile)
-class WorkerProfileAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name')
-    empty_value_display = '-пусто-'
-
-
 @admin.register(Contacts)
 class ContactsAdmin(admin.ModelAdmin):
     list_display = ('freelancer', 'type', 'contact',)
