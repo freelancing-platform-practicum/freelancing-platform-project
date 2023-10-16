@@ -1,10 +1,10 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Context } from "../../../context/context";
 import useFormAndValidation from "../../../hooks/useFormAndValidation";
 import Button from "../../Button/Button";
 import InputText from "../../Inputs/InputText/InputText";
-// import LinkBar from "../../LinkBar/LinkBar";
+// import SocialLinksBar from "../../SocialLinksBar/SocialLinksBar";
 import "./RegisterForm.css";
 
 const RegisterForm = ({ onSubmitHandler }) => {
@@ -18,7 +18,6 @@ const RegisterForm = ({ onSubmitHandler }) => {
   const {
     values, errors, isValid, handleChange, setValues, setErrors
   } = useFormAndValidation();
-  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -95,7 +94,6 @@ const RegisterForm = ({ onSubmitHandler }) => {
       onSubmitHandler(values);
     }
     setButtonClicked(true);
-    navigate('freelancer', { replace: true })
   };
 
   return (
@@ -195,7 +193,7 @@ const RegisterForm = ({ onSubmitHandler }) => {
           errorMessage={errors.re_password}
         />
         <div style={{ marginBottom: 60 }} />
-        {/* <LinkBar /> */}
+        {/* <SocialLinksBar /> */}
         <Button
           text="Создать аккаунт"
           width={400}
