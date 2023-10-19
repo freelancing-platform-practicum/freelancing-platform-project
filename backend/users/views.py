@@ -199,3 +199,18 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.data,
             status=status.HTTP_200_OK
         )
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    http_method_names = ["get", "post", "put", "delete"]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ReviewSerializer
+
+    def get_user(self):
+        return get_object_or_404(Member, id=self.kwargs.get('user_id'))
+
+    def get_queryset(self):
+        return self.get_user().reviews.all()
+
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user, on_review=self.get_user())

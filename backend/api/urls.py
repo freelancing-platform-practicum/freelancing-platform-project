@@ -10,6 +10,8 @@ router_v1 = DefaultRouter()
 router_v1.register(r'jobs', JobViewSet, basename='jobs')
 router_v1.register(r'category', JobCategoryViewSet, basename='category')
 router_v1.register(r'users', UserViewSet, basename='users')
+router_v1.register(r'users/(?P<user_id>\d+)/reviews',
+                ReviewViewSet, basename='reviews')
 
 urlpatterns = [
     path('', include(router_v1.urls)),

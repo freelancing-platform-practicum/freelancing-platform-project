@@ -335,3 +335,12 @@ class PostCustomerProfileSerializer(DynamicFieldsModelSerializer):
             industry=industry,
             **validated_data
         )
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    on_review = serializers.StringRelatedField(read_only=True)
+    reviewer = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Reviews
+        fields = ('on_review', 'reviewer', 'rank', 'text')

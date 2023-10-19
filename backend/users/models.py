@@ -411,3 +411,24 @@ class CustomerProfile(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Reviews(models.Model):
+    on_review = models.ForeignKey(Member, on_delete=models.CASCADE,
+                                  related_name='reviews')
+    reviewer = models.ForeignKey(Member, on_delete=models.CASCADE,
+                                 related_name='reviewer')
+    text = models.TextField(
+        max_length=500,
+        blank=True,
+        verbose_name='Отзыв')
+
+    class Rank(models.IntegerChoices):
+        ONE = 1, 'One'
+        TWO = 2, 'Two'
+        THREE = 3, 'Three'
+        FOUR = 4, 'Four'
+        FIVE = 5, 'Five'
+
+    rank = models.IntegerField(choices=Rank.choices,
+                               blank=True)
