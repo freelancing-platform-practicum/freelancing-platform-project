@@ -9,7 +9,8 @@ from .models import (Category, Contact, CustomerProfile, DiplomaFile,
                      Education, EducationDiploma, FreelancerCategory,
                      FreelancerContact, FreelancerEducation,
                      FreelancerPortfolio, FreelancerStack, Industry,
-                     PortfolioFile, Stack, WorkerProfile)
+                     PortfolioFile, Stack, WorkerProfile,
+                     Reviews)
 
 User = get_user_model()
 

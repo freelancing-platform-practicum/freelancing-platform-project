@@ -13,7 +13,7 @@ from .models import CustomerProfile, WorkerProfile
 from .permissions import IsUser
 from .serializers import (NewEmailSerializer, PasswordResetConfirmSerializer,
                           SendEmailResetSerializer, SetPasswordSerializer,
-                          UserCreateSerializer)
+                          UserCreateSerializer, ReviewSerializer)
 
 User = get_user_model()
 
@@ -203,7 +203,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "put", "delete"]
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = ReviewSerializer
 
     def get_user(self):
