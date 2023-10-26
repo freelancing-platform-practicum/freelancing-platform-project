@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as DjoserView
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -9,7 +9,7 @@ from .clients import (GetCustomerProfileSerializer,
                       PostCustomerProfileSerializer)
 from .freelancers import (GetWorkerProfileSerializer,
                           PostWorkerProfileSerializer, UserViewSerialiser)
-from .models import CustomerProfile, WorkerProfile
+from .models import CustomerProfile, WorkerProfile, Member, Reviews
 from .permissions import IsUser
 from .serializers import (NewEmailSerializer, PasswordResetConfirmSerializer,
                           SendEmailResetSerializer, SetPasswordSerializer,
@@ -201,8 +201,11 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    http_method_names = ["get", "post", "put", "delete"]
+class ReviewViewSet(mixins.CreateModelMixin,  
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = ReviewSerializer
 
@@ -214,3 +217,20 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(reviewer=self.request.user, on_review=self.get_user())
+    
+    def perform_update(self, serializer):
+        serializer.save(reviewer=self.request.user, on_review=self.get_user())
+    
+    def update(self, request):
+        instance = get_object_or_404(Reviews, reviewer=self.request.user,
+                                     on_review=self.get_user())
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)

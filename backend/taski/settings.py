@@ -221,6 +221,13 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',
     'DEFAULT_INFO': 'taski.urls.swagger_info',
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 
 }
 
