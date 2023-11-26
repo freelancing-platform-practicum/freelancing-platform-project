@@ -29,20 +29,13 @@ function Header() {
     return '';
   }
 
-  const completeFormPaths =
-    pathname === '/freelancer/complete' ||
-    pathname === '/customer/complete' ||
-    pathname === '/create-task';
+  const completeFormPaths = pathname === '/profile/complete' || pathname === '/create-task';
 
   const authPaths =
     pathname === '/signin' ||
     pathname === '/signup' ||
     pathname === '/forgot-password' ||
     pathname === '/reset-password';
-
-  const profilePaths = currentUser.is_worker
-    ? '/freelancer'
-    : currentUser.is_customer && '/customer';
 
   function handleSetting() {
     setShowSetting(!showSetting);
@@ -78,18 +71,20 @@ function Header() {
           <HeaderAuth />
         )}
       </div>
-      <div className={popStyle}>
-        <Link to={profilePaths} onClick={() => setShowSetting(false)} className="profile__title">
-          Настройки
-        </Link>
-        <Link
-          to="/signout"
-          onClick={() => setShowSetting(false)}
-          className="profile__title profile__popup-signout"
-        >
-          Выйти
-        </Link>
-      </div>
+      {showSetting && (
+        <div className={popStyle}>
+          <Link to="/profile" onClick={() => setShowSetting(false)} className="profile__title">
+            Настройки
+          </Link>
+          <Link
+            to="/signout"
+            onClick={() => setShowSetting(false)}
+            className="profile__title profile__popup-signout"
+          >
+            Выйти
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

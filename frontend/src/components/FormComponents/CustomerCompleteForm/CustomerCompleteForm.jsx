@@ -10,14 +10,7 @@ import './CustomerCompleteForm.css';
 function CustomerCompleteForm({ handleCustomerSubmit }) {
   const [photo, setPhoto] = useState(null);
 
-  const {
-    values,
-    errors,
-    isValid,
-    handleChange,
-    setValues,
-    setErrors,
-  } = useFormAndValidation();
+  const { values, errors, isValid, handleChange, setValues, setErrors } = useFormAndValidation();
 
   function addPhoto(url) {
     setPhoto({ photo: url });
@@ -36,24 +29,22 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
     setErrors({ ...errors, ...newErrors });
 
     if (values.name && values.industry && isValid) {
-
       // передать данные на бэк
       handleCustomerSubmit({ values, photo });
-      // console.log(values);
       // setValues({
       //  ...values,
       //  first_name: '',
       //  email: '',
       // });
       //
-      // navigate(`/customer`);
+      // navigate(`/profile`);
     }
 
   };
 
   function handleEmployeChange(event) {
     const { name, value } = event.target;
-    setValues({ ...values, [name]: value })
+    setValues({ ...values, [name]: value });
   }
 
   return (
