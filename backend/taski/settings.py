@@ -24,7 +24,7 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  'localhost:4173',
                  'localhost:5173',
-                 os.getenv('HOST_NEW'),
+                 os.getenv('HOST'),
                  'taski.ddns.net']
 
 
