@@ -2,9 +2,11 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from '../../context/context';
 import { industryAndCategoryOptions } from '../../utils/constants';
+import * as Api from '../../utils/Api';
+import { Button } from '../Button/Button';
 import './Card.css';
 
-function Card({ cards, isFirstTab }) {
+function Card({ cards, setCards, isFirstTab }) {
   const { currentUser, isAuthenticated } = useContext(Context);
 
   function definePrice(data) {
@@ -85,22 +87,27 @@ function Card({ cards, isFirstTab }) {
     );
   }
 
+  function handleRespond(id) {
+    Api.respondToTask(id)
+      .then(() => {
+        setCards(
+          cards.map((card) => {
+            if (card.id === id) {
+              return { ...card, is_responded: true };
+            }
+            return card;
+          }),
+        );
+      })
+      .catch(console.error);
+  }
+
   if (cards.length === 0) {
     return <h4>По вашему запросу ничего не найдено</h4>;
   }
 
   return cards?.map(
     (data, index) => (
-      // (freelanceFilter[`${data?.category}`] || !isFirstTab || one()) && (
-      // {isAuthenticated && (
-      //   <Link
-      //   key={index}
-      //   to={
-      //     data.hasOwnProperty('is_responded')
-      //       ? `order/${data?.id}`
-      //       : `freelancer/${data?.id}`
-      //   }
-      // >
       <div key={data?.id || index} className="order-card">
         {isAuthenticated ? (
           <Link
@@ -116,16 +123,17 @@ function Card({ cards, isFirstTab }) {
 
         {currentUser?.is_worker && isFirstTab && !data.is_responded && (
           <div className="order-card__respond-button-container">
-            <button type="button" className="order-card__respond-button">
-              Откликнуться
-            </button>
+            <Button
+              text="Откликнуться"
+              buttonSecondary={true}
+              width={140}
+              height={40}
+              onClick={() => handleRespond(data?.id)}
+            />
           </div>
         )}
       </div>
-      // </Link>
-      // </div>
     ),
-    // )
   );
 }
 

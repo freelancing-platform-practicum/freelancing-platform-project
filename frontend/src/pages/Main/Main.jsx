@@ -28,8 +28,9 @@ function Main() {
     previous: undefined,
   });
 
-  const contentBorderAuthorized = `content__border${isAuthenticated ? ' content__border-authorized' : ''
-    }`;
+  const contentBorderAuthorized = `content__border${
+    isAuthenticated ? ' content__border-authorized' : ''
+  }`;
 
   const [searchQuery, setSearchQuery] = useState(useLocation().search);
   const freelancerSearchQuery = searchQuery
@@ -174,6 +175,7 @@ function Main() {
             <Search setSearchQuery={setSearchQuery} />
             <CardList
               isFirstTab={isFirstTab}
+              setFirstTabData={setFirstTabData}
               firstTabData={firstTabData}
               secondTabData={secondTabData}
               firstTabNavigation={firstTabNavigation}

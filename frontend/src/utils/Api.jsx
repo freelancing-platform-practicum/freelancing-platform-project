@@ -201,10 +201,11 @@ function createChat(data) {
 }
 
 function getDataByPagination(request) {
-  const newRequest = request.replace('http://taski.ddns.net/api', '');
+  // const newRequest = request.replace('https://taski.ddns.net/api', '');
 
   return fetch(
-    `${BACKEND_BASE_URL}${newRequest}`,
+    // `${BACKEND_BASE_URL}${newRequest}`,
+    request
     // {
     //   headers: {
     //     Authorization: `Bearer ${sessionStorage.getItem('access')}`,

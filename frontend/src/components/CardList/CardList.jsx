@@ -1,10 +1,12 @@
 import { useContext } from 'react';
 import { Context } from '../../context/context';
 import { Card } from '../Card/Card';
+import { Button } from '../Button/Button';
 import './CardList.css';
 
 function CardList({
   firstTabData,
+  setFirstTabData,
   firstTabNavigation,
   loadFirstTabPaginationData,
   secondTabData,
@@ -35,7 +37,7 @@ function CardList({
       <div className="card-list">
         {isFirstTab ? (
           <>
-            <Card cards={firstTabData} isFirstTab={isFirstTab} />
+            <Card cards={firstTabData} setCards={setFirstTabData} isFirstTab={isFirstTab} />
             <div className="card-list__navigation">
               {firstTabNavigation.previous && (
                 <button
