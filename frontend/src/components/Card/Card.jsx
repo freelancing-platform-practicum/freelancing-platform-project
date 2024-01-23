@@ -12,7 +12,7 @@ function Card({ cards, setCards, isFirstTab }) {
   function definePrice(data) {
     if (data.hasOwnProperty('payrate')) {
       if (typeof data?.payrate === 'number' && data?.payrate !== 0) {
-        return `${data?.payrate} ₽/час`;
+        return `${data?.payrate.toLocaleString('ru-RU')} ₽/час`;
       } else {
         return 'Не указана';
       }
@@ -21,7 +21,7 @@ function Card({ cards, setCards, isFirstTab }) {
     // temporary
     if (data?.freelancer?.payrate) {
       if (typeof data?.freelancer?.payrate === 'number' && data?.freelancer?.payrate !== 0) {
-        return `${data?.freelancer?.payrate} ₽/час`;
+        return `${data?.freelancer?.payrate.toLocaleString('ru-RU')} ₽/час`;
       } else {
         return 'Не указана';
       }
@@ -30,7 +30,7 @@ function Card({ cards, setCards, isFirstTab }) {
     if (data?.ask_budget) {
       return 'Ожидает предложений';
     } else {
-      return `${data?.budget} ₽`;
+      return `${data?.budget.toLocaleString('ru-RU')} ₽`;
     }
   }
 
@@ -106,35 +106,33 @@ function Card({ cards, setCards, isFirstTab }) {
     return <h4>По вашему запросу ничего не найдено</h4>;
   }
 
-  return cards?.map(
-    (data, index) => (
-      <div key={data?.id || index} className="order-card">
-        {isAuthenticated ? (
-          <Link
-            to={
-              data.hasOwnProperty('is_responded') ? `/order/${data?.id}` : `/freelancer/${data?.id}`
-            }
-          >
-            {renderCardContent(data)}
-          </Link>
-        ) : (
-          renderCardContent(data)
-        )}
+  return cards?.map((data, index) => (
+    <div key={data?.id || index} className="order-card">
+      {isAuthenticated ? (
+        <Link
+          to={
+            data.hasOwnProperty('is_responded') ? `/order/${data?.id}` : `/freelancer/${data?.id}`
+          }
+        >
+          {renderCardContent(data)}
+        </Link>
+      ) : (
+        renderCardContent(data)
+      )}
 
-        {currentUser?.is_worker && isFirstTab && !data.is_responded && (
-          <div className="order-card__respond-button-container">
-            <Button
-              text="Откликнуться"
-              buttonSecondary={true}
-              width={140}
-              height={40}
-              onClick={() => handleRespond(data?.id)}
-            />
-          </div>
-        )}
-      </div>
-    ),
-  );
+      {currentUser?.is_worker && isFirstTab && !data.is_responded && (
+        <div className="order-card__respond-button-container">
+          <Button
+            text="Откликнуться"
+            buttonSecondary={true}
+            width={140}
+            height={40}
+            onClick={() => handleRespond(data?.id)}
+          />
+        </div>
+      )}
+    </div>
+  ));
 }
 
 export { Card };

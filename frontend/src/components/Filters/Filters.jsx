@@ -1,8 +1,10 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Context } from '../../context/context';
-import { Button } from '../Button/Button';
 import * as Api from '../../utils/Api';
+import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustomer';
+import { InputSwitch } from '../InputComponents/InputSwitch/InputSwitch';
+import { Button } from '../Button/Button';
 import './Filters.css';
 
 function Filters({ setSearchQuery, marginTop, isFirstTab }) {
@@ -16,6 +18,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
   const [budgetEnd, setBudgetEnd] = useState(queryParameters.get('max_budget') || undefined);
   const { currentUser, orderFilter, isAuthenticated } = useContext(Context);
   const navigate = useNavigate();
+  const { values, handleChangeCheckbox } = useFormAndValidation();
 
   useEffect(() => {
     Api.getAllCategories()
@@ -60,32 +63,58 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
     navigate(searchQuery);
   }
 
-  function FilterInput({ id, name, slug }) {
-    const isChecked = selectedCategories.includes(slug);
+  function FilterInput({ name, slug }) {
+    // const isChecked = selectedCategories.includes(slug);
 
-    function handleChange({ target: { value, checked } }) {
-      if (checked) {
-        setSelectedCategories([...selectedCategories, value]);
+    // function handleChange({ target: { value, checked } }) {
+    //   if (checked) {
+    //     setSelectedCategories([...selectedCategories, value]);
+    //   } else {
+    //     setSelectedCategories(selectedCategories.filter((category) => category !== value));
+    //   }
+    // }
+
+    function handleChange(event) {
+      handleChangeCheckbox(event);
+
+      if (event.target.checked) {
+        setSelectedCategories([...selectedCategories, slug]);
       } else {
-        setSelectedCategories(selectedCategories.filter((category) => category !== value));
+        setSelectedCategories(selectedCategories.filter((category) => category !== slug));
       }
     }
 
     return (
-      <div>
-        <input
-          type="checkbox"
-          id={`freelance-item${id}`}
-          name="freelance-item"
-          className="filters-checkbox"
-          value={slug}
-          checked={isChecked}
-          onChange={handleChange}
-        />
-        <label htmlFor={`freelance-item${id}`} className="filters-checkbox__item">
-          {name}
-        </label>
-      </div>
+      // <div>
+      //   <input
+      //     type="checkbox"
+      //     id={`freelance-item${id}`}
+      //     name="freelance-item"
+      //     className="filters-checkbox"
+      //     value={slug}
+      //     checked={isChecked}
+      //     onChange={handleChange}
+      //   />
+      //   <label htmlFor={`freelance-item${id}`} className="filters-checkbox__item">
+      //     {name}
+      //   </label>
+      // </div>
+      <InputSwitch
+        type="checkbox"
+        name={`specialization-${slug}`}
+        label={name}
+        gap={12}
+        // defaultChecked={isChecked}
+        defaultChecked={values[`specialization-${slug}`] || false}
+        onChange={handleChange}
+        // onChange={handleChangeCheckbox}
+        // onChange={() => {
+        //   setIsChecked((previous) => ({
+        //     ...previous,
+        //     budgetDiscussion: !previous.budgetDiscussion,
+        //   }));
+        // }}
+      />
     );
   }
 
@@ -122,7 +151,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
         </h2>
         <form className="filters-form-budget">
           <div className="filters-budget__wrapper">
-            <span className="filters-budget__label">От</span>
+            <span className="filters-budget__label">от</span>
             <input
               type="text"
               id="filters-budget__start"
@@ -133,7 +162,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
             />
           </div>
           <div className="filters-budget__wrapper">
-            <span className="filters-budget__label">До</span>
+            <span className="filters-budget__label">до</span>
             <input
               type="text"
               id="filters-budget__end"

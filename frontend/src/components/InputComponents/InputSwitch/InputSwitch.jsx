@@ -7,6 +7,7 @@ function InputSwitch({
   value,
   onChange,
   marginTop,
+  gap,
   name,
   error,
   isDisabled,
@@ -14,7 +15,7 @@ function InputSwitch({
 }) {
   return (
     <div className="input-switch__container">
-      <label className="input-switch__label" style={{ marginTop }}>
+      <label className="input-switch__label" style={{ marginTop, columnGap: gap }}>
         <input
           className={`input-switch__input${
             type === 'radio'

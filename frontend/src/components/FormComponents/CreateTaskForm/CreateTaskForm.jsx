@@ -128,7 +128,7 @@ function CreateTaskForm({ onSubmit }) {
         label="Жду предложений от фрилансеров"
         marginTop={12}
         value={values.budgetDiscussion || false}
-        checked={values.budgetDiscussion || false}
+        defaultChecked={values.budgetDiscussion || false}
         onChange={handleChangeCheckbox}
       />
       <div>
@@ -152,7 +152,7 @@ function CreateTaskForm({ onSubmit }) {
         name="deadlineDiscussion"
         label="Жду предложений от фрилансеров"
         marginTop={12}
-        checked={values.budgetDiscussion || false}
+        defaultChecked={values.budgetDiscussion || false}
         onChange={handleChangeCheckbox}
       />
       <div>

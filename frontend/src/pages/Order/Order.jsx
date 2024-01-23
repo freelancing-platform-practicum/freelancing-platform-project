@@ -489,7 +489,9 @@ function Order() {
                   <div>
                     <h2 className="profile__title">Бюджет</h2>
                     <p className="profile__main-text profile__info-main-text">
-                      {order?.ask_budget ? 'Ожидает предложений' : `${order?.budget} ₽`}
+                      {order?.ask_budget
+                        ? 'Ожидает предложений'
+                        : `${order?.budget.toLocaleString('ru-RU')} ₽`}
                     </p>
                   </div>
                   <div>

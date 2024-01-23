@@ -205,7 +205,7 @@ function getDataByPagination(request) {
 
   return fetch(
     // `${BACKEND_BASE_URL}${newRequest}`,
-    request
+    request,
     // {
     //   headers: {
     //     Authorization: `Bearer ${sessionStorage.getItem('access')}`,
