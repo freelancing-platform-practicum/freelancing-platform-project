@@ -121,7 +121,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
   };
 
   return (
-    <form className="register" onSubmit={handleSubmit}>
+    <form className="register" onSubmit={handleSubmit} noValidate={true}>
       <div className="register__form">
         <div className="register__form-role-container">
           <Button

@@ -188,7 +188,7 @@ function FreelancerCompleteForm({ onSubmit }) {
   };
 
   return (
-    <form className="freelancer-complete-form" onSubmit={handleSubmit}>
+    <form className="freelancer-complete-form" onSubmit={handleSubmit} noValidate={true}>
       <div className="freelancer-complete-form__image-input">
         <InputImage
           name="profilePhoto"

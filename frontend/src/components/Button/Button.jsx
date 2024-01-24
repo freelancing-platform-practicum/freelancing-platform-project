@@ -21,7 +21,7 @@ function Button({
   return (
     <button
       className={`button${
-        buttonSecondary ? ' button_type_secondary' : disabled ? ' button_type_disabled' : ''
+        disabled ? ' button_type_disabled' : buttonSecondary ? ' button_type_secondary' : ''
       }${buttonWhite ? ' button_color_white' : ''}${buttonBlack ? ' button_color_black' : ''}`}
       style={{
         width,

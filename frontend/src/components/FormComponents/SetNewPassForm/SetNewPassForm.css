@@ -12,11 +12,11 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-bottom: 48px;
+  margin-bottom: 60px;
 }
 
 .set-new-password__text {
-  margin: 0 0 20px;
+  margin: 0 0 8px;
   color: #585858;
   font-size: 16px;
   font-weight: 400;

@@ -34,7 +34,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
   };
 
   return (
-    <form className="employer-complete-form" onSubmit={handleSubmit}>
+    <form className="employer-complete-form" onSubmit={handleSubmit} noValidate={true}>
       <div className="employer-complete-form__image-input">
         <InputImage
           name="photo"

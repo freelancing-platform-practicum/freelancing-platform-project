@@ -35,7 +35,7 @@ function SetNewPassForm() {
   };
 
   return (
-    <form className="set-new-password" onSubmit={handleSubmit}>
+    <form className="set-new-password" onSubmit={handleSubmit} noValidate={true}>
       <div className="set-new-password__form">
         <div className="set-new-password__input-container">
           <p className="set-new-password__text">
@@ -45,7 +45,7 @@ function SetNewPassForm() {
             placeholder="Новый пароль"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            marginTop={20}
+            marginTop={32}
             width={400}
             height={60}
             pass={togglePasswordVisibility}
@@ -58,7 +58,7 @@ function SetNewPassForm() {
             placeholder="Повторите пароль"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            marginTop={20}
+            marginTop={32}
             width={400}
             height={60}
             name="re_password"

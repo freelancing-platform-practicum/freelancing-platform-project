@@ -30,12 +30,12 @@ function ForgotPassForm({ func, handleFormSubmit }) {
   };
 
   return (
-    <form className="forgot-pass" onSubmit={handleSubmit}>
+    <form className="forgot-pass" onSubmit={handleSubmit} noValidate={true}>
       <div className="forgot-pass__form">
         <div className="forgot-pass__input-container">
           <p className="forgot-pass__text">
             Введите адрес электронной почты, который вы использовали при регистрации, и мы вышлем
-            вам инструкции по сбросу пароля.
+            вам ссылку для сброса пароля.
           </p>
           <InputText
             placeholder="Эл. почта"

@@ -84,7 +84,7 @@ function LoginForm({ setIsAuthenticated, setCurrentUser }) {
   };
 
   return (
-    <form className="login" onSubmit={handleSubmit}>
+    <form className="login" onSubmit={handleSubmit} noValidate={true}>
       <div className="login__form">
         <div className="login__input-container">
           <InputText

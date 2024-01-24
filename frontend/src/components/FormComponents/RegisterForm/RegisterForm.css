@@ -23,7 +23,6 @@
   font-size: 16px;
   font-weight: 400;
   line-height: normal;
-  text-underline-offset: 4px;
 }
 
 .register__footer-link-description {
@@ -33,6 +32,7 @@
 .register__footer-link {
   color: #585858;
   text-decoration: underline;
+  text-underline-offset: 3px;
   transition: all 0.2s ease-in-out;
 }
 

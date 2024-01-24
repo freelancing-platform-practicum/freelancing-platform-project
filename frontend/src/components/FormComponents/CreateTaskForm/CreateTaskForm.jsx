@@ -74,7 +74,7 @@ function CreateTaskForm({ onSubmit }) {
   };
 
   return (
-    <form className="create-task-form" onSubmit={handleSubmit}>
+    <form className="create-task-form" onSubmit={handleSubmit} noValidate={true}>
       <div>
         <p className="create-task-form__input-text">Название заказа</p>
         <InputText
