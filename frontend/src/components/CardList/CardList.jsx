@@ -16,7 +16,7 @@ function CardList({
 }) {
   const { isAuthenticated } = useContext(Context);
 
-  function handleFirstTabPagination({ target: { value } }) {
+  function handleFirstTabPagination({ currentTarget: { value } }) {
     loadFirstTabPaginationData(firstTabNavigation[value]);
     window.scrollTo({
       top: isAuthenticated ? 0 : 500,
@@ -24,7 +24,7 @@ function CardList({
     });
   }
 
-  function handleSecondTabPagination({ target: { value } }) {
+  function handleSecondTabPagination({ currentTarget: { value } }) {
     loadSecondTabPaginationData(secondTabNavigation[value]);
     window.scrollTo({
       top: isAuthenticated ? 0 : 500,
@@ -40,22 +40,24 @@ function CardList({
             <Card cards={firstTabData} setCards={setFirstTabData} isFirstTab={isFirstTab} />
             <div className="card-list__navigation">
               {firstTabNavigation.previous && (
-                <button
-                  value="previous"
+                <Button
+                  buttonSecondary={true}
+                  buttonWhite={true}
+                  width={289}
+                  text="Предыдущая страница"
                   onClick={handleFirstTabPagination}
-                  className="card-list__button button button_type_secondary"
-                >
-                  Предыдущая страница
-                </button>
+                  value="previous"
+                />
               )}
               {firstTabNavigation.next && (
-                <button
-                  value="next"
+                <Button
+                  buttonSecondary={true}
+                  buttonWhite={true}
+                  width={289}
+                  text="Следующая страница"
                   onClick={handleFirstTabPagination}
-                  className="card-list__button button button_type_secondary"
-                >
-                  Следующая страница
-                </button>
+                  value="next"
+                />
               )}
             </div>
           </>
@@ -64,22 +66,24 @@ function CardList({
             <Card cards={secondTabData} isFirstTab={isFirstTab} />
             <div className="card-list__navigation">
               {secondTabNavigation.previous && (
-                <button
-                  value="previous"
+                <Button
+                  buttonSecondary={true}
+                  buttonWhite={true}
+                  width={289}
+                  text="Предыдущая страница"
                   onClick={handleSecondTabPagination}
-                  className="card-list__button button button_type_secondary"
-                >
-                  Предыдущая страница
-                </button>
+                  value="previous"
+                />
               )}
               {secondTabNavigation.next && (
-                <button
+                <Button
+                  buttonSecondary={true}
+                  buttonWhite={true}
+                  width={289}
+                  text="Следующая страница"
+                  onClick={handleFirstTabPagination}
                   value="next"
-                  onClick={handleSecondTabPagination}
-                  className="card-list__button button button_type_secondary"
-                >
-                  Следующая страница
-                </button>
+                />
               )}
             </div>
           </>

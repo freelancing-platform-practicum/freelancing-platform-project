@@ -6,6 +6,7 @@ import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustom
 import { InputSwitch } from '../InputComponents/InputSwitch/InputSwitch';
 import { Button } from '../Button/Button';
 import './Filters.css';
+import { InputText } from '../InputComponents/InputText/InputText.jsx';
 
 function Filters({ setSearchQuery, marginTop, isFirstTab }) {
   const location = useLocation();
@@ -150,28 +151,22 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
           {isAuthenticated && currentUser?.is_worker && isFirstTab && 'Бюджет'}
         </h2>
         <form className="filters-form-budget">
-          <div className="filters-budget__wrapper">
-            <span className="filters-budget__label">от</span>
-            <input
-              type="text"
-              id="filters-budget__start"
-              className="filters-budget"
-              value={budgetStart || ''}
-              onChange={handleBudgetStart}
-              required
-            />
-          </div>
-          <div className="filters-budget__wrapper">
-            <span className="filters-budget__label">до</span>
-            <input
-              type="text"
-              id="filters-budget__end"
-              className="filters-budget"
-              value={budgetEnd || ''}
-              onChange={handleBudgetEnd}
-              required
-            />
-          </div>
+          <InputText
+            type="number"
+            name="filters-payrate-from"
+            width={241}
+            height={44}
+            value={budgetStart || ''}
+            onChange={handleBudgetStart}
+          />
+          <InputText
+            type="number"
+            name="filters-payrate-to"
+            width={241}
+            height={44}
+            value={budgetEnd || ''}
+            onChange={handleBudgetEnd}
+          />
         </form>
       </div>
       <div className="filters-buttons">

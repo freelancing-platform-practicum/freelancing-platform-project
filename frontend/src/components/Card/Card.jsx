@@ -12,7 +12,7 @@ function Card({ cards, setCards, isFirstTab }) {
   function definePrice(data) {
     if (data.hasOwnProperty('payrate')) {
       if (typeof data?.payrate === 'number' && data?.payrate !== 0) {
-        return `${data?.payrate.toLocaleString('ru-RU')} ₽/час`;
+        return `${data?.payrate.toLocaleString('ru-RU')} ₽ / час`;
       } else {
         return 'Не указана';
       }
@@ -21,7 +21,7 @@ function Card({ cards, setCards, isFirstTab }) {
     // temporary
     if (data?.freelancer?.payrate) {
       if (typeof data?.freelancer?.payrate === 'number' && data?.freelancer?.payrate !== 0) {
-        return `${data?.freelancer?.payrate.toLocaleString('ru-RU')} ₽/час`;
+        return `${data?.freelancer?.payrate.toLocaleString('ru-RU')} ₽ / час`;
       } else {
         return 'Не указана';
       }
@@ -103,7 +103,11 @@ function Card({ cards, setCards, isFirstTab }) {
   }
 
   if (cards.length === 0) {
-    return <h4>По вашему запросу ничего не найдено</h4>;
+    return (
+      <p className="order-card__not-found">
+        Поиск не дал результатов. Поменяйте фильтры или введите другой запрос
+      </p>
+    );
   }
 
   return cards?.map((data, index) => (

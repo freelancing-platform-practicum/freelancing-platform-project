@@ -16,12 +16,13 @@ function Button({
   fontSize,
   fontWeight,
   opacity,
+  value,
 }) {
   return (
     <button
-      className={`button ${
-        buttonSecondary ? 'button_type_secondary' : disabled ? 'button_type_disabled' : ''
-      } ${buttonWhite ? 'button_color_white' : ''} ${buttonBlack ? 'button_color_black' : ''}`}
+      className={`button${
+        buttonSecondary ? ' button_type_secondary' : disabled ? ' button_type_disabled' : ''
+      }${buttonWhite ? ' button_color_white' : ''}${buttonBlack ? ' button_color_black' : ''}`}
       style={{
         width,
         height,
@@ -36,6 +37,7 @@ function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      value={value}
     >
       <span
         className={`button__text${

@@ -34,6 +34,10 @@
   border: 1px solid #eb5757;
 }
 
+.input_type_filters-number {
+  padding-left: 41px;
+}
+
 .input_type_number {
   padding: 19px 49px 19px 19px;
   background: #fff url('../../../images/ruble.svg') no-repeat calc(100% - 19px) center / 11px;
@@ -66,6 +70,12 @@
   background-image: url('../../../images/showPass.svg');
   background-position: center;
   cursor: pointer;
+}
+
+.input__filters-text {
+  position: absolute;
+  top: 13px;
+  left: 20px;
 }
 
 .input__error-text {

@@ -52,17 +52,14 @@
 }
 
 .order-card__description {
-  /* max-height: 48px; */
+  display: -webkit-box;
+  overflow: hidden;
   margin: 12px 0 0;
+  -webkit-box-orient: vertical;
   color: #3f3f3f;
   font-size: 16px;
+  -webkit-line-clamp: 2;
   line-height: 1.5;
-
-  /* text-overflow: ellipsis; */
-
-  /* overflow: hidden; */
-
-  /* white-space: nowrap; */
 }
 
 .order-card__tag-container {
@@ -97,4 +94,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
+}
+
+.order-card__not-found {
+  margin: 28px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
 }

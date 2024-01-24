@@ -32,9 +32,11 @@ function InputText({
         className={`input${
           name === 'payrate'
             ? ' input_type_number'
-            : name.includes('password')
-              ? ' input_type_password'
-              : ''
+            : name.includes('filters-payrate')
+              ? ' input_type_filters-number'
+              : name.includes('password')
+                ? ' input_type_password'
+                : ''
         }${error ? ' input_type_error' : ''}`}
         type={type !== 'textarea' ? type : ''}
         placeholder={placeholder}
@@ -51,6 +53,9 @@ function InputText({
         {...inputProperties}
       />
       {pass && <button className="input__show-pass" type="button" onClick={pass} />}
+      {name.includes('filters-payrate') && (
+        <span className="input__filters-text">{name.includes('from') ? 'от' : 'до'}</span>
+      )}
       <span className="input__error-text">{error}</span>
     </div>
   );

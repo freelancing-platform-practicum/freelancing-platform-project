@@ -98,7 +98,7 @@ function ProfileFreelancerViewOnly({
               <div>
                 <h2 className="profile__title">Ставка за час</h2>
                 <p className="profile__main-text profile__info-main-text">
-                  {freelancer?.payrate} ₽/час
+                  {freelancer?.payrate.toLocaleString('ru-RU')} ₽ / час
                 </p>
               </div>
               <div>
