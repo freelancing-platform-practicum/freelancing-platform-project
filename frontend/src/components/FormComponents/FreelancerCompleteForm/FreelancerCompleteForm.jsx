@@ -135,7 +135,13 @@ function FreelancerCompleteForm({ onSubmit }) {
       allValues.stacks = tags?.map((tag) => ({ name: tag }));
     }
 
-    if (values?.phone || values?.email || values?.telegram || values?.other || values?.preferred) {
+    if (
+      values?.phone ||
+      values?.email ||
+      values?.telegram ||
+      values?.otherContact ||
+      values?.preferred
+    ) {
       allValues.contacts = [];
     }
 
@@ -163,11 +169,11 @@ function FreelancerCompleteForm({ onSubmit }) {
       });
     }
 
-    if (values?.other) {
+    if (values?.otherContact) {
       allValues.contacts.push({
         type: 'other',
-        value: values?.other,
-        preferred: values?.preferred === 'other',
+        value: values?.otherContact,
+        preferred: values?.preferred === 'otherContact',
       });
     }
 
@@ -290,17 +296,17 @@ function FreelancerCompleteForm({ onSubmit }) {
           <InputText
             type="url"
             placeholder="Ссылка на другой сайт"
-            name="other"
+            name="otherContact"
             width={328}
-            value={values.other || ''}
-            error={errors.other}
+            value={values.otherContact || ''}
+            error={errors.otherContact}
             onChange={handleChange}
           />
           <InputSwitch
             type="radio"
             name="preferred"
             label="Предпочтительный вид связи"
-            value="other"
+            value="otherContact"
             onChange={handleChange}
           />
         </div>

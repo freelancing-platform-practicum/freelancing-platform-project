@@ -75,7 +75,7 @@ function Main() {
         })
         .catch((error) => {
           console.error(error);
-          setFirstTabValuesOnError(response);
+          setFirstTabValuesOnError();
         });
     }
 
@@ -86,7 +86,7 @@ function Main() {
         })
         .catch((error) => {
           console.error(error);
-          setFirstTabValuesOnError(response);
+          setFirstTabValuesOnError();
         });
 
       Api.getTasksCustomerWithAuthorization(searchQuery, currentUser.id)
@@ -106,7 +106,7 @@ function Main() {
         })
         .catch((error) => {
           console.error(error);
-          setFirstTabValuesOnError(response);
+          setFirstTabValuesOnError();
         });
 
       Api.getTasksFreelancerWithAuthorization(searchQuery)
@@ -127,7 +127,7 @@ function Main() {
       })
       .catch((error) => {
         console.error(error);
-        setFirstTabValuesOnError(response);
+        setFirstTabValuesOnError();
       });
   }
 
@@ -185,7 +185,11 @@ function Main() {
             />
           </div>
           <div className="freelance-order__column-filter">
-            <Filters setSearchQuery={setSearchQuery} isFirstTab={isFirstTab} />
+            <Filters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              isFirstTab={isFirstTab}
+            />
           </div>
         </section>
       </div>

@@ -2,20 +2,21 @@ import './InputSwitch.css';
 
 function InputSwitch({
   id,
+  name,
   type,
   label,
   value,
-  onChange,
   marginTop,
   gap,
-  name,
+  color,
   error,
   isDisabled,
   defaultChecked,
+  onChange,
 }) {
   return (
     <div className="input-switch__container">
-      <label className="input-switch__label" style={{ marginTop, columnGap: gap }}>
+      <label className="input-switch__label" style={{ color, marginTop, columnGap: gap }}>
         <input
           className={`input-switch__input${
             type === 'radio'

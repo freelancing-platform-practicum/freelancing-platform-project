@@ -180,7 +180,11 @@ function useFormAndValidation() {
       и строчные символы "-", "_", "@", "."`;
     }
 
-    if ((name === 'web' || name === 'other') && !websiteLinkRegex.test(value) && value.length > 0) {
+    if (
+      (name === 'web' || name === 'otherContact') &&
+      !websiteLinkRegex.test(value) &&
+      value.length > 0
+    ) {
       errorMessage = `Укажите ссылку в формате https://example.com`;
     }
 

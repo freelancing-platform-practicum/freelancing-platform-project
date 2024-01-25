@@ -91,8 +91,8 @@ function getTasksWithSearch(searchQuery) {
   );
 }
 
-function getTasksWithAuthorization() {
-  return fetch(`${BACKEND_BASE_URL}/jobs/`, {
+function getTasksWithAuthorization(searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${searchQuery}`, {
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem('access')}`,
     },

@@ -8,7 +8,7 @@ import { InputText } from '../InputComponents/InputText/InputText';
 import { Button } from '../Button/Button';
 import './Filters.css';
 
-function Filters({ setSearchQuery, marginTop, isFirstTab }) {
+function Filters({ searchQuery, setSearchQuery, marginTop, isFirstTab }) {
   const location = useLocation();
   const queryParameters = new URLSearchParams(location.search);
   const [selectedCategories, setSelectedCategories] = useState(
@@ -19,7 +19,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
   const [budgetEnd, setBudgetEnd] = useState(queryParameters.get('max_budget') || undefined);
   const { currentUser, orderFilter, isAuthenticated } = useContext(Context);
   const navigate = useNavigate();
-  const { values, handleChangeCheckbox } = useFormAndValidation();
+  const { values, setValues, handleChangeCheckbox, resetForm } = useFormAndValidation();
 
   useEffect(() => {
     Api.getAllCategories()
@@ -29,6 +29,15 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
       .catch((error) => {
         console.error(error);
       });
+    // setValues({selectedCategories.map((category) => `specialization-${category}`): true});
+    const newValues = {};
+    for (const category of selectedCategories) {
+      newValues[`specialization-${category}`] = true;
+    }
+    setValues(newValues);
+
+    navigate(searchQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleReset() {
@@ -37,6 +46,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
     setSelectedCategories([]);
     setSearchQuery('');
     // navigate('/');
+    resetForm();
   }
 
   function handleBudgetStart({ target: { value } }) {
@@ -60,9 +70,9 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
     const searchCategory = selectedCategories.map((category) => `category=${category}`);
     if (budgetStart) searchCategory.push(`min_budget=${budgetStart}`);
     if (budgetEnd) searchCategory.push(`max_budget=${budgetEnd}`);
-    const searchQuery = `?${[...searchCategory].join('&')}`;
-    setSearchQuery(searchQuery);
-    navigate(searchQuery);
+    const fullSearchQuery = `?${[...searchCategory].join('&')}`;
+    setSearchQuery(fullSearchQuery);
+    navigate(fullSearchQuery);
   }
 
   function FilterInput({ name, slug }) {
@@ -106,6 +116,7 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
         name={`specialization-${slug}`}
         label={name}
         gap={12}
+        color="#3f3f3f"
         // defaultChecked={isChecked}
         defaultChecked={values[`specialization-${slug}`] || false}
         onChange={handleChange}
