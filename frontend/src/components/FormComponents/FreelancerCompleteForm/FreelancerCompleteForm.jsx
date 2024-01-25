@@ -11,8 +11,6 @@ import { Button } from '../../Button/Button';
 import { Context } from '../../../context/context';
 import './FreelancerCompleteForm.css';
 
-// const MAX_ATTACHED_DOCS = 8;
-
 function FreelancerCompleteForm({ onSubmit }) {
   const { currentUser } = useContext(Context);
   const [profilePhoto, setProfilePhoto] = useState({});
@@ -137,7 +135,7 @@ function FreelancerCompleteForm({ onSubmit }) {
       allValues.stacks = tags?.map((tag) => ({ name: tag }));
     }
 
-    if (values?.phone || values?.email || values?.telegram || values?.preferred) {
+    if (values?.phone || values?.email || values?.telegram || values?.other || values?.preferred) {
       allValues.contacts = [];
     }
 
@@ -148,6 +146,7 @@ function FreelancerCompleteForm({ onSubmit }) {
         preferred: values?.preferred === 'phone',
       });
     }
+
     if (values?.email) {
       allValues.contacts.push({
         type: 'email',
@@ -155,11 +154,20 @@ function FreelancerCompleteForm({ onSubmit }) {
         preferred: values?.preferred === 'email',
       });
     }
+
     if (values?.telegram) {
       allValues.contacts.push({
         type: 'telegram',
         value: values?.telegram,
         preferred: values?.preferred === 'telegram',
+      });
+    }
+
+    if (values?.other) {
+      allValues.contacts.push({
+        type: 'other',
+        value: values?.other,
+        preferred: values?.preferred === 'other',
       });
     }
 
@@ -183,7 +191,6 @@ function FreelancerCompleteForm({ onSubmit }) {
       allValues.web = values.web;
     }
 
-    // console.log(allValues);
     onSubmit(allValues);
   };
 
@@ -199,7 +206,7 @@ function FreelancerCompleteForm({ onSubmit }) {
         />
       </div>
       <div>
-        <p className="freelancer-complete-form__input-text">Имя Фамилия</p>
+        <p className="freelancer-complete-form__input-text">Имя</p>
         <InputText
           type="text"
           placeholder="Имя"
@@ -212,13 +219,13 @@ function FreelancerCompleteForm({ onSubmit }) {
           minLength={80}
           required={true}
         />
+        <p className="freelancer-complete-form__input-text">Фамилия</p>
         <InputText
           type="text"
           placeholder="Фамилия"
           autoComplete="family-name"
           name="last_name"
           width={610}
-          marginTop={12}
           value={values.last_name || ''}
           error={errors.last_name}
           onChange={handleChange}
@@ -278,6 +285,22 @@ function FreelancerCompleteForm({ onSubmit }) {
             name="preferred"
             label="Предпочтительный вид связи"
             value="telegram"
+            onChange={handleChange}
+          />
+          <InputText
+            type="url"
+            placeholder="Ссылка на другой сайт"
+            name="other"
+            width={328}
+            value={values.other || ''}
+            error={errors.other}
+            onChange={handleChange}
+          />
+          <InputSwitch
+            type="radio"
+            name="preferred"
+            label="Предпочтительный вид связи"
+            value="other"
             onChange={handleChange}
           />
         </div>

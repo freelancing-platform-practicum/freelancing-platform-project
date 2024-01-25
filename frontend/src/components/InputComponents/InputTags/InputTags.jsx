@@ -24,14 +24,16 @@ function InputTags({ name, isDisabled, tags, setTags, handleChange, error }) {
 
   return (
     <>
-      <div className={`tags${isDisabled ? ' tags_disabled' : ''}`}>
+      <div
+        className={`tags${isDisabled ? ' tags_disabled' : ''}${tags?.length > 0 ? ' tags_filed' : ''}`}
+      >
         {(!isDisabled || tags.length === 0) && (
           <input
             name={name}
             type="text"
             onKeyDown={handleKeyDown}
             className="tag__input"
-            placeholder="Начните вводить"
+            placeholder="Начните вводить и нажмите Enter"
             disabled={isDisabled}
           />
         )}

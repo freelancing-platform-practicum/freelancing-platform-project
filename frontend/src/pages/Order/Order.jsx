@@ -466,7 +466,7 @@ function Order() {
                   <div>
                     <h2 className="profile__title">Дата публикации</h2>
                     <p className="profile__main-text profile__info-main-text">
-                      {new Date(order?.pub_date).toLocaleDateString('ru-RU')}
+                      {new Date(order?.pub_date)?.toLocaleDateString('ru-RU')}
                     </p>
                   </div>
                   <div>
@@ -491,7 +491,7 @@ function Order() {
                     <p className="profile__main-text profile__info-main-text">
                       {order?.ask_budget
                         ? 'Ожидает предложений'
-                        : `${order?.budget.toLocaleString('ru-RU')} ₽`}
+                        : `${order?.budget?.toLocaleString('ru-RU')} ₽`}
                     </p>
                   </div>
                   <div>
@@ -499,7 +499,7 @@ function Order() {
                     <p className="profile__main-text profile__info-main-text">
                       {order?.ask_deadline
                         ? 'По договоренности'
-                        : new Date(order?.deadline).toLocaleDateString('ru-RU')}
+                        : new Date(order?.deadline)?.toLocaleDateString('ru-RU')}
                     </p>
                   </div>
                 </div>

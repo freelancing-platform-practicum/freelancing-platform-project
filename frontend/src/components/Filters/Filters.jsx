@@ -4,9 +4,9 @@ import { Context } from '../../context/context';
 import * as Api from '../../utils/Api';
 import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustomer';
 import { InputSwitch } from '../InputComponents/InputSwitch/InputSwitch';
+import { InputText } from '../InputComponents/InputText/InputText';
 import { Button } from '../Button/Button';
 import './Filters.css';
-import { InputText } from '../InputComponents/InputText/InputText.jsx';
 
 function Filters({ setSearchQuery, marginTop, isFirstTab }) {
   const location = useLocation();
@@ -48,12 +48,13 @@ function Filters({ setSearchQuery, marginTop, isFirstTab }) {
     setBudgetEnd(value.replace(regex, ''));
   }
 
-  const isFreelance =
-    (orderFilter && isAuthenticated) || /^\/order\/\d+\/responses$/.test(location.pathname);
-  const filtersContainerStyle = isFreelance
-    ? 'filters-container filters-container__freelance'
-    : 'filters-container';
-  // const filtersContainerStyle = `filters-container${orderFilter && isAuthenticated ? ' filters-container__freelance ' : ''}`;
+  // const isFreelance =
+  //   (orderFilter && isAuthenticated) || /^\/order\/\d+\/responses$/.test(location.pathname);
+  // const filtersContainerStyle = isFreelance
+  //   ? 'filters-container filters-container_freelance'
+  //   : 'filters-container';
+  const filtersContainerStyle = 'filters-container';
+  // const filtersContainerStyle = `filters-container${orderFilter && isAuthenticated ? ' filters-container_freelance ' : ''}`;
 
   function handleFilter() {
     const searchCategory = selectedCategories.map((category) => `category=${category}`);
