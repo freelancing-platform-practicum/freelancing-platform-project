@@ -46,17 +46,6 @@ function getUserInfo() {
   });
 }
 
-function createUserProfile(data) {
-  return fetch(`${BACKEND_BASE_URL}/users/me/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
-    },
-    body: JSON.stringify(data),
-  }).then((response) => checkResponse(response));
-}
-
 function updateUserProfile(data) {
   return fetch(`${BACKEND_BASE_URL}/users/me/`, {
     method: 'PATCH',
@@ -79,16 +68,66 @@ function createTask(data) {
   }).then((response) => checkResponse(response));
 }
 
-function getTasks() {
-  return fetch(`${BACKEND_BASE_URL}/jobs/`).then((response) => checkResponse(response));
+function updateTask(data, id) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${id}/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    },
+    body: JSON.stringify(data),
+  }).then((response) => checkResponse(response));
 }
 
-function getTasksWithAuthorization() {
-  return fetch(`${BACKEND_BASE_URL}/jobs/`, {
+function getTasks(searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${searchQuery}`).then((response) =>
+    checkResponse(response),
+  );
+}
+
+function getTasksWithSearch(searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${searchQuery}`).then((response) =>
+    checkResponse(response),
+  );
+}
+
+function getTasksWithAuthorization(searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${searchQuery}`, {
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem('access')}`,
     },
   }).then((response) => checkResponse(response));
+}
+
+function getTasksFreelancerWithAuthorization(searchQuery) {
+  // console.log(
+  //   `${BACKEND_BASE_URL}/jobs/${
+  //     searchQuery ? `${searchQuery}&is_responded=true` : `?is_responded=true`
+  //   }`,
+  // );
+  return fetch(
+    `${BACKEND_BASE_URL}/jobs/${
+      searchQuery ? `${searchQuery}&is_responded=true` : `?is_responded=true`
+    }`,
+    {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+      },
+    },
+  ).then((response) => checkResponse(response));
+}
+
+function getTasksCustomerWithAuthorization(searchQuery, userID) {
+  return fetch(
+    `${BACKEND_BASE_URL}/jobs/${
+      searchQuery ? `${searchQuery}&client=${userID}` : `?client=${userID}`
+    }`,
+    {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+      },
+    },
+  ).then((response) => checkResponse(response));
 }
 
 function getTaskById(id) {
@@ -99,12 +138,80 @@ function getTaskById(id) {
   }).then((response) => checkResponse(response));
 }
 
-function getFreelancers() {
-  return fetch(`${BACKEND_BASE_URL}/main`).then((response) => checkResponse(response));
+function deleteTaskById(id) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${id}/`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    },
+  }).then((response) => checkResponse(response));
+}
+
+function respondToTask(id) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${id}/response/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    },
+  }).then((response) => checkResponse(response));
+}
+
+function getResponses(id, searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/jobs/${id}/offers/${searchQuery}`, {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    },
+  }).then((response) => checkResponse(response));
+}
+
+function getFreelancers(searchQuery) {
+  return fetch(`${BACKEND_BASE_URL}/main/${searchQuery}`).then((response) =>
+    checkResponse(response),
+  );
 }
 
 function getFreelancerById(id) {
   return fetch(`${BACKEND_BASE_URL}/users/${id}`).then((response) => checkResponse(response));
+}
+
+function getAllCategories() {
+  return fetch(`${BACKEND_BASE_URL}/category/`).then((response) => checkResponse(response));
+}
+
+function requestNewPassword(email) {
+  return fetch(`${BACKEND_BASE_URL}/users/reset_password/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(email),
+  }).then((response) => checkResponse(response));
+}
+
+function createChat(data) {
+  return fetch(`${BACKEND_BASE_URL}/chats/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    },
+    body: JSON.stringify(data),
+  }).then((response) => checkResponse(response));
+}
+
+function getDataByPagination(request) {
+  // const newRequest = request.replace('https://taski.ddns.net/api', '');
+
+  return fetch(
+    // `${BACKEND_BASE_URL}${newRequest}`,
+    request,
+    // {
+    //   headers: {
+    //     Authorization: `Bearer ${sessionStorage.getItem('access')}`,
+    //   }
+    // }
+  ).then((response) => checkResponse(response));
 }
 
 export {
@@ -112,12 +219,22 @@ export {
   authenticateUser,
   getNewAccessToken,
   getUserInfo,
-  createUserProfile,
   updateUserProfile,
+  requestNewPassword,
   createTask,
+  updateTask,
   getTasks,
+  getTasksWithSearch,
   getTasksWithAuthorization,
+  getTasksCustomerWithAuthorization,
+  getTasksFreelancerWithAuthorization,
   getTaskById,
+  deleteTaskById,
+  respondToTask,
+  getResponses,
   getFreelancers,
   getFreelancerById,
+  getAllCategories,
+  getDataByPagination,
+  createChat,
 };

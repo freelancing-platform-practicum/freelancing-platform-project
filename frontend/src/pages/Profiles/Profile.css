@@ -1,10 +1,11 @@
 .profile {
   display: flex;
-  padding: 24px 100px 100px;
+  padding: 24px 100px 50px;
   column-gap: 20px;
 }
 
 .profile_block {
+  box-sizing: border-box;
   align-self: start;
   border: 1px solid #c6c6c6;
   border-radius: 10px;
@@ -111,7 +112,7 @@
   font-size: 18px;
 }
 
-.form-top-buttons_type_cansel {
+.form-top-buttons_type_cancel {
   padding-right: 20px;
   margin-left: auto;
   color: #a8a8a8;
@@ -119,6 +120,11 @@
 
 .form-top-buttons_type_submit {
   color: #3f3f3f;
+}
+
+.form-top-buttons_type_submit-disabled {
+  color: #a8a8a8;
+  cursor: auto;
 }
 
 .form-profile__bottom-buttons {

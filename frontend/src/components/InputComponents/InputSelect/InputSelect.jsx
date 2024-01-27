@@ -1,4 +1,3 @@
-import React from 'react';
 import './InputSelect.css';
 
 function InputSelect({
@@ -11,7 +10,8 @@ function InputSelect({
   onChange,
   onBlur,
   error,
-  errorMessage,
+  required,
+  margin,
 }) {
   return (
     <div className="select-container">
@@ -22,18 +22,19 @@ function InputSelect({
         name={name}
         value={value}
         onChange={onChange}
-        style={{ width }}
+        style={{ width, margin }}
         disabled={isDisabled}
         onBlur={onBlur}
+        required={required}
       >
         <option value="">{placeholder}</option>
         {options.map((option, index) => (
           <option key={index} className="option" value={option.value}>
-            {option.label}
+            {option.label || option.title}
           </option>
         ))}
       </select>
-      {error && <span className="input__error-text">{errorMessage}</span>}
+      {error && <span className="input__error-text">{error}</span>}
     </div>
   );
 }

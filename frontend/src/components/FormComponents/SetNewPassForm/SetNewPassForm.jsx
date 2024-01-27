@@ -1,12 +1,12 @@
-import React from 'react';
+import { useState } from 'react';
 import { useFormAndValidation } from '../../../hooks/useFormAndValidation';
 import { Button } from '../../Button/Button';
 import { InputText } from '../../InputComponents/InputText/InputText';
 import './SetNewPassForm.css';
 
 function SetNewPassForm() {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [buttonClicked, setButtonClicked] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [buttonClicked, setButtonClicked] = useState(false);
   const { values, errors, isValid, handleChange, setValues, setErrors } = useFormAndValidation();
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -35,7 +35,7 @@ function SetNewPassForm() {
   };
 
   return (
-    <form className="set-new-password" onSubmit={handleSubmit}>
+    <form className="set-new-password" onSubmit={handleSubmit} noValidate={true}>
       <div className="set-new-password__form">
         <div className="set-new-password__input-container">
           <p className="set-new-password__text">
@@ -45,7 +45,7 @@ function SetNewPassForm() {
             placeholder="Новый пароль"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            marginTop={20}
+            marginTop={32}
             width={400}
             height={60}
             pass={togglePasswordVisibility}
@@ -53,20 +53,18 @@ function SetNewPassForm() {
             onChange={handleChange}
             value={values.password || ''}
             error={errors.password}
-            errorMessage={errors.password}
           />
           <InputText
             placeholder="Повторите пароль"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            marginTop={20}
+            marginTop={32}
             width={400}
             height={60}
             name="re_password"
             onChange={handleChange}
             value={values.re_password || ''}
             error={errors.re_password}
-            errorMessage={errors.re_password}
           />
         </div>
         <Button

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFormAndValidation } from '../../../hooks/useFormAndValidation';
+import { useState, useEffect } from 'react';
+import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { industryAndCategoryOptions } from '../../../utils/constants';
 import { InputImage } from '../../InputComponents/InputImage/InputImage';
 import { InputText } from '../../InputComponents/InputText/InputText';
@@ -8,57 +8,41 @@ import { InputSelect } from '../../InputComponents/InputSelect/InputSelect';
 import './CustomerCompleteForm.css';
 
 function CustomerCompleteForm({ handleCustomerSubmit }) {
-  const [photo, setPhoto] = useState(null);
-  const [buttonClicked, setButtonClicked] = useState(false);
+  const [photo, setPhoto] = useState();
 
-  const { values, errors, isValid, handleChange, setValues, setErrors } = useFormAndValidation();
+  const { values, errors, isValid, handleChange, setIsValid, setErrors, checkErrors } =
+    useFormAndValidation();
+
+  const isDisabled = !values.name || !values.industry || !isValid;
 
   function addPhoto(url) {
     setPhoto({ photo: url });
   }
 
+  useEffect(() => {
+    const valid = checkErrors(errors);
+    setIsValid(valid);
+  }, [isValid, errors]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    let newErrors = {};
-
-    if (!values.name) {
-      newErrors = { ...newErrors, name: 'Введите название компании или ваше имя' };
-    }
-    if (!values.industry) {
-      newErrors = { ...newErrors, industry: 'Выберите отрасль' };
-    }
-
-    setErrors({ ...errors, ...newErrors });
 
     if (values.name && values.industry && isValid) {
       // передать данные на бэк
       handleCustomerSubmit({ values, photo });
-      // setValues({
-      //  ...values,
-      //  first_name: '',
-      //  email: '',
-      // });
-      //
-      // navigate(`/profile`);
     }
-
-    setButtonClicked(true);
   };
 
-  function employeHandleChange(event) {
-    const { name, value } = event.target;
-    setValues({ ...values, [name]: value });
-  }
-
   return (
-    <form className="employer-complete-form" onSubmit={handleSubmit}>
+    <form className="employer-complete-form" onSubmit={handleSubmit} noValidate={true}>
       <div className="employer-complete-form__image-input">
         <InputImage
           name="photo"
           value={values.photo || ''}
           error={errors.photo}
-          errorMessage={errors.photo}
           onChange={addPhoto}
+          setErrors={setErrors}
+          // errors={errors}
         />
       </div>
       <div>
@@ -71,9 +55,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
           width={610}
           value={values.name || ''}
           error={errors.name}
-          errorMessage={errors.name}
-          onChange={employeHandleChange}
-          onBlur={handleChange}
+          onChange={handleChange}
         />
       </div>
       <div>
@@ -83,9 +65,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
           placeholder="Выберите из списка"
           value={values.industry || ''}
           error={errors.industry}
-          errorMessage={errors.industry}
-          onChange={employeHandleChange}
-          onBlur={handleChange}
+          onChange={handleChange}
           options={industryAndCategoryOptions}
         />
       </div>
@@ -99,9 +79,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
           height={150}
           value={values.about || ''}
           error={errors.about}
-          errorMessage={errors.about}
-          onChange={employeHandleChange}
-          onBlur={handleChange}
+          onChange={handleChange}
         />
       </div>
       <div>
@@ -113,9 +91,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
           width={610}
           value={values.web || ''}
           error={errors.web}
-          errorMessage={errors.web}
-          onChange={employeHandleChange}
-          onBlur={handleChange}
+          onChange={handleChange}
         />
         <button type="button" className="employer-complete-form__add-link-button">
           Добавить ещё сайт или социальные сети +
@@ -127,7 +103,7 @@ function CustomerCompleteForm({ handleCustomerSubmit }) {
         width={289}
         marginTop={60}
         marginBottom={200}
-        disabled={!isValid || !values.name || !values.industry}
+        disabled={isDisabled}
       />
     </form>
   );

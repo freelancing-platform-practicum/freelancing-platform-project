@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-bottom: 48px;
+  margin-bottom: 60px;
 }
 
 .forgot-pass__text {

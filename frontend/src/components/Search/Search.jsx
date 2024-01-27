@@ -1,12 +1,23 @@
-import React, { useContext } from 'react';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Context } from '../../context/context';
 import './Search.css';
 
-function Search() {
+function Search({ setSearchQuery }) {
   const { currentUser } = useContext(Context);
+  const [searchPhrase, setSearchPhrase] = useState('');
+  const navigate = useNavigate();
 
   function handleFormSubmit(event) {
     event.preventDefault();
+    const searchQuery = searchPhrase ? `?search=${searchPhrase}` : '';
+    setSearchQuery(searchQuery);
+    setSearchPhrase(searchPhrase.replace(/ +(?= )/g, ''));
+    navigate(searchQuery);
+  }
+
+  function handleChange(event) {
+    setSearchPhrase(event.target.value);
   }
 
   return (
@@ -24,9 +35,9 @@ function Search() {
                 : 'Поиск фрилансеров по специальности, навыкам, ключевым словам...'
             }
             minLength="2"
-            maxLength="30"
             type="text"
-            required
+            value={searchPhrase}
+            onChange={handleChange}
           />
         </div>
       </form>

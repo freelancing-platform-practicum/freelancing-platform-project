@@ -1,4 +1,5 @@
 import globals from 'globals';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 import { FlatCompat } from '@eslint/eslintrc';
@@ -13,9 +14,10 @@ const compat = new FlatCompat({
 });
 
 export default [
+  eslintPluginUnicorn.configs['flat/recommended'],
   ...compat.extends(
-    'plugin:unicorn/recommended',
     'airbnb',
+    'plugin:react/jsx-runtime',
     'airbnb/hooks',
   ),
   eslintConfigPrettier,
@@ -50,10 +52,11 @@ export default [
       'react/jsx-no-bind': 'off', // TODO [2023-12-01]: изучить useCallback и memo, и включить
       'spaced-comment': 'off', // TODO [2023-12-01]: изучить форматирование комментариев JSX в WebStorm и включить
       'unicorn/filename-case': 'off',
+      'react/jsx-boolean-value': 'off',
     },
   },
   {
-    files: ['eslint.config.js'],
+    files: ['eslint.config.js', 'vite.config.js'],
     rules: {
       'import/no-extraneous-dependencies': 'off',
       'no-underscore-dangle': 'off',
@@ -62,7 +65,6 @@ export default [
   {
     ignores: [
       'dist',
-      'vite.config.js',
     ],
   },
 ];

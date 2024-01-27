@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Marquee from 'react-fast-marquee';
 import { Context } from '../../context/context';
 import * as Api from '../../utils/Api';
@@ -13,46 +14,133 @@ function Main() {
   const [isFirstTab, setIsFirstTab] = useState(true);
   // true - Таски/Фрилансеры, false - Фрилансеры/Мои заказы
   const { currentUser, isAuthenticated } = useContext(Context);
-  const [tasks, setTasks] = useState([]);
-  const [freelancers, setFreelancers] = useState([]);
+
+  const [firstTabData, setFirstTabData] = useState([]);
+  const [secondTabData, setSecondTabData] = useState([]);
+
+  const [firstTabNavigation, setFirstTabNavigation] = useState({
+    next: undefined,
+    previous: undefined,
+  });
+
+  const [secondTabNavigation, setSecondTabNavigation] = useState({
+    next: undefined,
+    previous: undefined,
+  });
+
   const contentBorderAuthorized = `content__border${
     isAuthenticated ? ' content__border-authorized' : ''
   }`;
 
+  const [searchQuery, setSearchQuery] = useState(useLocation().search);
+  const freelancerSearchQuery = searchQuery
+    .replaceAll('category', 'categories')
+    .replace('min_budget', 'min_payrate')
+    .replace('max_budget', 'max_payrate');
+
+  function setFirstTabValues(response) {
+    setFirstTabData(response.results);
+    setFirstTabNavigation({ next: response.next, previous: response.previous });
+  }
+
+  function setSecondTabValues(response) {
+    setSecondTabData(response.results);
+    setSecondTabNavigation({ next: response.next, previous: response.previous });
+  }
+
+  function setFirstTabValuesOnError() {
+    setFirstTabData([]);
+    setSecondTabNavigation({ next: undefined, previous: undefined });
+  }
+
+  function setSecondTabValuesOnError() {
+    setSecondTabData([]);
+    setSecondTabNavigation({ next: undefined, previous: undefined });
+  }
+
   useEffect(() => {
-    if (currentUser?.is_customer || !isAuthenticated) {
-      Api.getFreelancers()
+    if (!isAuthenticated) {
+      Api.getFreelancers(freelancerSearchQuery)
         .then((response) => {
-          setFreelancers(response.results);
+          setSecondTabValues(response);
         })
         .catch((error) => {
           console.error(error);
+          setSecondTabValuesOnError();
+        });
+
+      Api.getTasks(searchQuery)
+        .then((response) => {
+          setFirstTabValues(response);
+        })
+        .catch((error) => {
+          console.error(error);
+          setFirstTabValuesOnError();
+        });
+    }
+
+    if (currentUser?.is_customer) {
+      Api.getFreelancers(freelancerSearchQuery)
+        .then((response) => {
+          setFirstTabValues(response);
+        })
+        .catch((error) => {
+          console.error(error);
+          setFirstTabValuesOnError();
+        });
+
+      Api.getTasksCustomerWithAuthorization(searchQuery, currentUser.id)
+        .then((response) => {
+          setSecondTabValues(response);
+        })
+        .catch((error) => {
+          console.error(error);
+          setSecondTabValuesOnError();
         });
     }
 
     if (currentUser?.is_worker) {
-      Api.getTasksWithAuthorization()
+      Api.getTasksWithAuthorization(searchQuery)
         .then((response) => {
-          setTasks(response.results);
+          setFirstTabValues(response);
         })
         .catch((error) => {
           console.error(error);
+          setFirstTabValuesOnError();
         });
-    } else {
-      Api.getTasks()
+
+      Api.getTasksFreelancerWithAuthorization(searchQuery)
         .then((response) => {
-          setTasks(response.results);
+          setSecondTabValues(response);
         })
         .catch((error) => {
           console.error(error);
+          setSecondTabValuesOnError();
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location, searchQuery]);
 
-  // function handleFreelanceFilter(filter) {
-  //   setFreelanceFilter(filter);
-  // }
+  function loadFirstTabPaginationData(request) {
+    Api.getDataByPagination(request)
+      .then((response) => {
+        setFirstTabValues(response);
+      })
+      .catch((error) => {
+        console.error(error);
+        setFirstTabValuesOnError();
+      });
+  }
+
+  function loadSecondTabPaginationData(request) {
+    Api.getDataByPagination(request)
+      .then((response) => {
+        setSecondTabValues(response);
+      })
+      .catch((error) => {
+        console.error(error);
+        setSecondTabValuesOnError();
+      });
+  }
 
   return (
     <main className="content">
@@ -84,12 +172,23 @@ function Main() {
         <section className="freelance-order">
           <div className="freelance-order__column-order">
             <TabsMain isFirstTab={isFirstTab} setIsFirstTab={setIsFirstTab} />
-            <Search />
-            <CardList isFirstTab={isFirstTab} tasks={tasks} freelancers={freelancers} />
+            <Search setSearchQuery={setSearchQuery} />
+            <CardList
+              isFirstTab={isFirstTab}
+              setFirstTabData={setFirstTabData}
+              firstTabData={firstTabData}
+              secondTabData={secondTabData}
+              firstTabNavigation={firstTabNavigation}
+              loadFirstTabPaginationData={loadFirstTabPaginationData}
+              secondTabNavigation={secondTabNavigation}
+              loadSecondTabPaginationData={loadSecondTabPaginationData}
+            />
           </div>
           <div className="freelance-order__column-filter">
             <Filters
-            // handleFreelanceFilter={handleFreelanceFilter}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              isFirstTab={isFirstTab}
             />
           </div>
         </section>

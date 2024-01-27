@@ -1,5 +1,5 @@
 .order-card {
-  padding: 24px;
+  padding: 23px;
   border: 1px solid #c6c6c6;
   border-radius: 12px;
   margin: 0;
@@ -52,18 +52,14 @@
 }
 
 .order-card__description {
-  /* max-height: 48px; */
+  display: -webkit-box;
+  overflow: hidden;
   margin: 12px 0 0;
+  -webkit-box-orient: vertical;
   color: #3f3f3f;
   font-size: 16px;
-  font-style: normal;
+  -webkit-line-clamp: 2;
   line-height: 1.5;
-
-  /* text-overflow: ellipsis; */
-
-  /* overflow: hidden; */
-
-  /* white-space: nowrap; */
 }
 
 .order-card__tag-container {
@@ -76,7 +72,7 @@
 }
 
 .order-card__tag {
-  padding: 8px 16px;
+  padding: 7px 15px;
   border: 1px solid #c6c6c6;
   border-radius: 8px;
   margin: 0;
@@ -89,7 +85,6 @@
   margin: 20px 0 8px;
   color: #a8a8a8;
   font-size: 16px;
-  font-style: normal;
   font-weight: 400;
   line-height: normal;
 }
@@ -99,18 +94,12 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
+  margin: 16px 0 0;
 }
 
-.order-card__respond-button {
-  align-items: center;
-  justify-content: flex-end;
-  padding: 8px 14px;
-  border: 1px solid #c6c6c6;
-  border-radius: 12px;
-  background: #f7f7f7;
-  cursor: pointer;
+.order-card__not-found {
+  margin: 28px 0 0;
   font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 150% */
+  line-height: 1.5;
+  text-align: center;
 }
