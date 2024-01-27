@@ -1,7 +1,7 @@
 from io import BytesIO
 
 from drf_extra_fields.fields import Base64ImageField
-from pdf2image import convert_from_bytes, convert_from_path
+# from pdf2image import convert_from_bytes, convert_from_path
 from PIL import Image
 
 from taski.settings import THUMBNAIL_SIZE

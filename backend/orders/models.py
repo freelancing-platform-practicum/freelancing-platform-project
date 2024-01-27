@@ -8,11 +8,12 @@ from django.db import models
 from PIL import Image
 
 from taski.settings import CATEGORY_CHOICES, DATETIME_FORMAT, THUMBNAIL_SIZE
+from users.models import Category as JobCategory
 from users.models import CustomerProfile as Client
 from users.models import Stack
 from users.models import WorkerProfile as Freelancer
 
-
+'''
 class JobCategory(models.Model):
     """
     Специализации.
@@ -34,6 +35,7 @@ class JobCategory(models.Model):
 
     def __str__(self):
         return self.name
+'''
 
 
 class Job(models.Model):

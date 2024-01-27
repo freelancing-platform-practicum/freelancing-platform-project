@@ -15,6 +15,7 @@ SCOPES = [
 
 def get_service():
     creds = None
+    '''
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
@@ -27,7 +28,13 @@ def get_service():
             creds = flow.run_local_server(port=0)
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
-
+    '''
+    # flow = InstalledAppFlow.from_client_secrets_file('cred.json', SCOPES)
+    # print('%%%%%%%%%%%%%%%%%%%%')
+    # print(flow)
+    # creds = flow.run_local_server(port=0)
+    # print('&&&&&&&&&&&&&&&&&&&&')
+    # print(creds)
     return build('gmail', 'v1', credentials=creds)
 
 
