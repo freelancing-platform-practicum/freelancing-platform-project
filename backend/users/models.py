@@ -1,5 +1,7 @@
 from io import BytesIO
 
+import filetype
+import fitz
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -7,12 +9,12 @@ from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from PIL import Image
 
-from taski.settings import CATEGORY_CHOICES, CONTACT_TYPE, THUMBNAIL_SIZE
+from taski.settings import (CATEGORY_CHOICES, CONTACT_TYPE, MEDIA_ROOT,
+                            THUMBNAIL_SIZE)
 from users.usermanager import UserManager
 
 
 class Member(PermissionsMixin, AbstractBaseUser):
-
     email = models.EmailField(
         verbose_name='email address',
         max_length=254,
@@ -41,7 +43,8 @@ class Member(PermissionsMixin, AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'is_customer', 'is_worker']
+    # REQUIRED_FIELDS = ['first_name', 'last_name', 'is_customer', 'is_worker']
+    REQUIRED_FIELDS = ['is_customer', 'is_worker']
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -99,7 +102,7 @@ class Stack(models.Model):
     )
 
     class Meta:
-        ordering = ['name']
+        ordering = ['id']
 
     def __str__(self):
         return self.name
@@ -130,7 +133,7 @@ class Category(models.Model):
 
 
 class PortfolioFile(models.Model):
-    file = models.ImageField(
+    file = models.FileField(
         upload_to="portfolio/",
     )
     name = models.CharField(
@@ -143,10 +146,21 @@ class PortfolioFile(models.Model):
         blank=True)
 
     def create_thumbnail(self):
-        image = Image.open(self.file, 'r')
+        # расширение загруженного файла
+        extension = filetype.guess_extension(self.file)
+        # создаём имя thumbnail-файла
+        _, thumb_name = self.file.name.replace('.', '_thumb.').split('/')
+        if extension != 'png':
+            thumb_name = thumb_name.replace(extension, 'png')
+        # открываем загруженный файл
+        data = fitz.open(MEDIA_ROOT + '/' + self.file.name)
+        image = Image.open(
+            BytesIO(
+                data.get_page_pixmap(0).pil_tobytes(format='png')
+            )
+        )
         thumbnail_size = THUMBNAIL_SIZE
         image.thumbnail(thumbnail_size)
-        x, thumb_name = self.file.name.replace('.', '_thumb.').split('/')
         thumb_io = BytesIO()
         image.save(thumb_io, 'png')
         self.thumbnail.save(
@@ -175,10 +189,21 @@ class DiplomaFile(models.Model):
         blank=True)
 
     def create_thumbnail(self):
-        image = Image.open(self.file, 'r')
+        # расширение загруженного файла
+        extension = filetype.guess_extension(self.file)
+        # создаём имя thumbnail-файла
+        _, thumb_name = self.file.name.replace('.', '_thumb.').split('/')
+        if extension != 'png':
+            thumb_name = thumb_name.replace(extension, 'png')
+        # открываем загруженный файл
+        data = fitz.open(MEDIA_ROOT + '/' + self.file.name)
+        image = Image.open(
+            BytesIO(
+                data.get_page_pixmap(0).pil_tobytes(format='png')
+            )
+        )
         thumbnail_size = THUMBNAIL_SIZE
         image.thumbnail(thumbnail_size)
-        x, thumb_name = self.file.name.replace('.', '_thumb.').split('/')
         thumb_io = BytesIO()
         image.save(thumb_io, 'png')
         self.thumbnail.save(

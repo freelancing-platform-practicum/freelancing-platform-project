@@ -4,7 +4,7 @@ from django.core.validators import RegexValidator
 # from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from .fields import CustomizedBase64ImageField
+from .fields import CustomizedBase64FileField, CustomizedBase64ImageField
 from .models import (CATEGORY_CHOICES, Category, Contact, DiplomaFile,
                      Education, EducationDiploma, FreelancerCategory,
                      FreelancerContact, FreelancerEducation,
@@ -64,7 +64,8 @@ class DiplomaFileSerializer(serializers.ModelSerializer):
 
 
 class PortfolioFileSerializer(serializers.ModelSerializer):
-    file = CustomizedBase64ImageField(required=False)
+    # file = CustomizedBase64ImageField(required=False)
+    file = CustomizedBase64FileField(required=False)
 
     class Meta:
         model = PortfolioFile
