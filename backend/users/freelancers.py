@@ -56,7 +56,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class DiplomaFileSerializer(serializers.ModelSerializer):
-    file = CustomizedBase64ImageField()
+    # file = CustomizedBase64ImageField()
+    file = CustomizedBase64FileField()
 
     class Meta:
         model = DiplomaFile
@@ -239,7 +240,8 @@ class PostWorkerProfileSerializer(DynamicFieldsModelSerializer):
 
         if 'categories' in locals():
             for category in categories:
-                record, status = Category.objects.get_or_create(**category)
+                # record, status = Category.objects.get_or_create(**category)
+                record = Category.objects.get(slug=category['slug'])
                 FreelancerCategory.objects.create(
                     freelancer=profile,
                     category=record
@@ -296,9 +298,10 @@ class PostWorkerProfileSerializer(DynamicFieldsModelSerializer):
 
         if 'categories' in self.initial_data:
             categories = validated_data.pop('categories')
-            Category.objects.filter(workerprofile__user=user).delete()
+            # Category.objects.filter(workerprofile__user=user).delete()
             for category in categories:
-                record, status = Category.objects.get_or_create(**category)
+                # record, status = Category.objects.get_or_create(**category)
+                record = Category.objects.get(slug=category['slug'])
                 profile.categories.add(record)
 
         if 'education' in self.initial_data:
