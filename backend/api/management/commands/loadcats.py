@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.core.management import BaseCommand
 
-from orders.models import JobCategory
+from users.models import Category as JobCategory
 
 path = f'{settings.BASE_DIR}/data/'
 os.chdir(path)

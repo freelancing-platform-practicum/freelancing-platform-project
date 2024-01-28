@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from orders.models import Job, JobCategory, JobResponse
+from orders.models import Job, JobResponse
 from users.models import CustomerProfile, Member, Stack, WorkerProfile
+from users.models import Category as JobCategory
 
 
 # Для администирорования пользователей #

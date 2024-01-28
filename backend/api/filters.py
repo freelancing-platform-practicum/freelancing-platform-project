@@ -6,7 +6,8 @@ from django.db.models.functions import Cast
 from django_filters.rest_framework import FilterSet, NumberFilter, filters
 from django_filters.widgets import BooleanWidget
 
-from orders.models import Job, JobCategory, JobResponse
+from orders.models import Job, JobResponse
+from users.models import Category as JobCategory
 from taski.settings import ASK_MSG
 
 

@@ -17,9 +17,10 @@ from api.serializers import (ChatCreateSerializer, ChatReadSerializer,
                              JobListSerializer, JobResponseSerializer,
                              MessageSerializer, ResponseFreelancersSerializer)
 from chat.models import Chat, Message
-from orders.models import Job, JobCategory, JobResponse
+from orders.models import Job, JobResponse
 from taski.settings import OTHER_TASK_CHAT_ERR, SELECTED_FOR_JOB_MSG
 from users.models import WorkerProfile
+from users.models import Category as JobCategory
 
 
 class JobCategoryViewSet(CreateListDestroytViewSet):
