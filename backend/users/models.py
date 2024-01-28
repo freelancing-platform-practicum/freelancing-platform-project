@@ -176,7 +176,7 @@ class PortfolioFile(models.Model):
 
 
 class DiplomaFile(models.Model):
-    file = models.ImageField(
+    file = models.FileField(
         upload_to="education/"
     )
     name = models.CharField(
