@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from api.utils import CustomBase64ImageField
 from chat.models import Chat, Message
-from orders.models import Job, JobCategory, JobFile, JobResponse, StackJob
+from orders.models import Job, JobFile, JobResponse, StackJob
 from taski.settings import (ASK_MSG, BUDGET_DATA_ERR, BUDGET_ERR,
                             CATEGORY_CHOICES, CHAT_ALREADY_EXISTS_ERR,
                             CURRENT_DATE_ERR, DATE_FORMAT_ERR, DATETIME_FORMAT,
@@ -17,6 +17,7 @@ from users.clients import GetCustomerProfileSerializer, IndustrySerializer
 from users.freelancers import GetWorkerProfileSerializer
 from users.models import CustomerProfile as Client
 from users.models import Stack, WorkerProfile
+from users.models import Category as JobCategory
 
 
 class ClientSerializer(serializers.ModelSerializer):
