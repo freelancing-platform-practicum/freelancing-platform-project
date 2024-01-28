@@ -24,7 +24,7 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  'localhost:4173',
                  'localhost:5173',
-                 os.getenv('HOST_NEW'),
+                 os.getenv('HOST'),
                  'taski.ddns.net']
 
 
@@ -98,14 +98,13 @@ DATABASES = {
     }
 }
 
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -156,12 +155,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-ZOHOVERIFY_PATH = os.path.join(BASE_DIR, 'zohoverify')
-
-STATICFILES_DIRS = [
-    ZOHOVERIFY_PATH,
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -260,6 +253,8 @@ DATE_FORMAT_ERR = ("Некорректный формат даты - "
                    f"({DATETIME_FORMAT})")
 ASK_MSG = 'Жду предложений'
 BUDGET_DATA_ERR = f'Бюджет должен быть числом или {ASK_MSG}'
+DEADLINE_ERR = 'Укажите сроки или выберете "Жду предложений"'
+BUDGET_ERR = 'Укажите бюджет или выберете "Жду предложений"'
 
 # Cообщения в api/views.py
 OTHER_TASK_CHAT_ERR = 'Вы не можете создать чат по чужому заданию.'

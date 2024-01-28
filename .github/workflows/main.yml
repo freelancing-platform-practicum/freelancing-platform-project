@@ -87,8 +87,8 @@ jobs:
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_NEW }}
-          username: ${{ secrets.USER_NEW }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: | 
@@ -97,7 +97,7 @@ jobs:
             sudo docker-compose down
             touch .env
             echo DEBUG=False >> .env
-            echo HOST_NEW=${{ secrets.HOST_NEW }} >> .env
+            echo HOST=${{ secrets.HOST }} >> .env
             echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -110,5 +110,6 @@ jobs:
             sudo docker-compose exec -T backend python manage.py makemigrations orders
             sudo docker-compose exec -T backend python manage.py makemigrations chat
             sudo docker-compose exec -T backend python manage.py migrate
+            sudo docker-compose exec -T python manage.py loadcats
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
             sudo docker image prune -af

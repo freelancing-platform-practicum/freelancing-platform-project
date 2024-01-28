@@ -1,53 +1,139 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Context } from '../../context/context';
+import * as Api from '../../utils/Api';
+import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustomer';
+import { InputSwitch } from '../InputComponents/InputSwitch/InputSwitch';
+import { InputText } from '../InputComponents/InputText/InputText';
 import { Button } from '../Button/Button';
 import './Filters.css';
 
-function Filters() {
-  const [budgetStart, setBudgetStart] = useState(null);
-  const [budgetEnd, setBudgetEnd] = useState(null);
-  const { currentUser, orderFilter, isAuthenticated, freelanceFilter } = useContext(Context);
+function Filters({ searchQuery, setSearchQuery, marginTop, isFirstTab }) {
+  const location = useLocation();
+  const queryParameters = new URLSearchParams(location.search);
+  const [selectedCategories, setSelectedCategories] = useState(
+    queryParameters.getAll('category') || undefined,
+  );
+  const [categories, setCategories] = useState([]);
+  const [budgetStart, setBudgetStart] = useState(queryParameters.get('min_budget') || undefined);
+  const [budgetEnd, setBudgetEnd] = useState(queryParameters.get('max_budget') || undefined);
+  const { currentUser, orderFilter, isAuthenticated } = useContext(Context);
   const navigate = useNavigate();
-  let localFreelanceFilter = {};
+  const { values, setValues, handleChangeCheckbox, resetForm } = useFormAndValidation();
 
   useEffect(() => {
-    load(7);
+    Api.getAllCategories()
+      .then((response) => {
+        setCategories(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    // setValues({selectedCategories.map((category) => `specialization-${category}`): true});
+    const newValues = {};
+    for (const category of selectedCategories) {
+      newValues[`specialization-${category}`] = true;
+    }
+    setValues(newValues);
+
+    navigate(searchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleBudgetClean = () => {
+  function handleReset() {
     setBudgetStart('');
     setBudgetEnd('');
-  };
-
-  function load(n) {
-    while (n) {
-      let checked = JSON.parse(localStorage.getItem(`freelance-item${n}`));
-      let profession = document.querySelector(`#freelance-item${n}`).value;
-      localFreelanceFilter[`${profession}`] = checked;
-      document.querySelector(`#freelance-item${n}`).checked = checked;
-      n--;
-    }
-    // handleFreelanceFilter(localFreelanceFilter);
+    setSelectedCategories([]);
+    setSearchQuery('');
+    // navigate('/');
+    resetForm();
   }
 
-  const saveFilters = (n) => {
-    let checkbox = document.querySelector(`#freelance-item${n}`);
-    localFreelanceFilter = freelanceFilter;
-    localFreelanceFilter[`${checkbox.value}`] = checkbox.checked;
-    localStorage.setItem(`freelance-item${n}`, checkbox.checked);
-    // handleFreelanceFilter(localFreelanceFilter);
-    // setRerender(!rerender);
-  };
+  function handleBudgetStart({ target: { value } }) {
+    const regex = /[^0-9]/g;
+    setBudgetStart(value.replace(regex, ''));
+  }
+  function handleBudgetEnd({ target: { value } }) {
+    const regex = /[^0-9]/g;
+    setBudgetEnd(value.replace(regex, ''));
+  }
 
-  const filtersContainerStyle = `filters-container${
-    orderFilter && isAuthenticated ? ' filters-container__freelance ' : ''
-  }`;
+  // const isFreelance =
+  //   (orderFilter && isAuthenticated) || /^\/order\/\d+\/responses$/.test(location.pathname);
+  // const filtersContainerStyle = isFreelance
+  //   ? 'filters-container filters-container_freelance'
+  //   : 'filters-container';
+  const filtersContainerStyle = 'filters-container';
+  // const filtersContainerStyle = `filters-container${orderFilter && isAuthenticated ? ' filters-container_freelance ' : ''}`;
+
+  function handleFilter() {
+    const searchCategory = selectedCategories.map((category) => `category=${category}`);
+    if (budgetStart) searchCategory.push(`min_budget=${budgetStart}`);
+    if (budgetEnd) searchCategory.push(`max_budget=${budgetEnd}`);
+    const fullSearchQuery = `?${[...searchCategory].join('&')}`;
+    setSearchQuery(fullSearchQuery);
+    navigate(fullSearchQuery);
+  }
+
+  function FilterInput({ name, slug }) {
+    // const isChecked = selectedCategories.includes(slug);
+
+    // function handleChange({ target: { value, checked } }) {
+    //   if (checked) {
+    //     setSelectedCategories([...selectedCategories, value]);
+    //   } else {
+    //     setSelectedCategories(selectedCategories.filter((category) => category !== value));
+    //   }
+    // }
+
+    function handleChange(event) {
+      handleChangeCheckbox(event);
+
+      if (event.target.checked) {
+        setSelectedCategories([...selectedCategories, slug]);
+      } else {
+        setSelectedCategories(selectedCategories.filter((category) => category !== slug));
+      }
+    }
+
+    return (
+      // <div>
+      //   <input
+      //     type="checkbox"
+      //     id={`freelance-item${id}`}
+      //     name="freelance-item"
+      //     className="filters-checkbox"
+      //     value={slug}
+      //     checked={isChecked}
+      //     onChange={handleChange}
+      //   />
+      //   <label htmlFor={`freelance-item${id}`} className="filters-checkbox__item">
+      //     {name}
+      //   </label>
+      // </div>
+      <InputSwitch
+        type="checkbox"
+        name={`specialization-${slug}`}
+        label={name}
+        gap={12}
+        color="#3f3f3f"
+        // defaultChecked={isChecked}
+        defaultChecked={values[`specialization-${slug}`] || false}
+        onChange={handleChange}
+        // onChange={handleChangeCheckbox}
+        // onChange={() => {
+        //   setIsChecked((previous) => ({
+        //     ...previous,
+        //     budgetDiscussion: !previous.budgetDiscussion,
+        //   }));
+        // }}
+      />
+    );
+  }
 
   return (
-    <section className="filters">
-      {currentUser?.is_customer && (
+    <section className="filters" style={{ marginTop }}>
+      {currentUser?.is_customer && location.pathname === '/' && (
         <Button
           text="Создать заказ"
           width={289}
@@ -57,125 +143,47 @@ function Filters() {
       )}
       <div className={filtersContainerStyle}>
         <h2 className="filters-container__title">Специализация</h2>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item1"
-            name="freelance-item1"
-            className="filters-checkbox"
-            value="дизайн"
-            onClick={() => saveFilters(1)}
+
+        {categories.map((category) => (
+          <FilterInput
+            key={category.id}
+            slug={category.slug}
+            name={category.name}
+            id={category.id}
           />
-          <label htmlFor="freelance-item1" className="filters-checkbox__item">
-            дизайн
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item2"
-            name="freelance-item2"
-            className="filters-checkbox"
-            value="разработка"
-            onClick={() => saveFilters(2)}
-          />
-          <label htmlFor="freelance-item2" className="filters-checkbox__item">
-            разработка
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item3"
-            name="freelance-item3"
-            className="filters-checkbox"
-            value="тестирование"
-            onClick={() => saveFilters(3)}
-          />
-          <label htmlFor="freelance-item3" className="filters-checkbox__item">
-            тестирование
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item4"
-            name="freelance-item4"
-            className="filters-checkbox"
-            value="администрирование"
-            onClick={() => saveFilters(4)}
-          />
-          <label htmlFor="freelance-item4" className="filters-checkbox__item">
-            администрирование
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item5"
-            name="freelance-item5"
-            className="filters-checkbox"
-            value="маркетинг"
-            onClick={() => saveFilters(5)}
-          />
-          <label htmlFor="freelance-item5" className="filters-checkbox__item">
-            маркетинг
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item6"
-            name="freelance-item6"
-            className="filters-checkbox"
-            value="контент"
-            onClick={() => saveFilters(6)}
-          />
-          <label htmlFor="freelance-item6" className="filters-checkbox__item">
-            контент
-          </label>
-        </div>
-        <div>
-          <input
-            type="checkbox"
-            id="freelance-item7"
-            name="freelance-item7"
-            className="filters-checkbox"
-            value="разное"
-            onClick={() => saveFilters(7)}
-          />
-          <label htmlFor="freelance-item7" className="filters-checkbox__item">
-            разное
-          </label>
-        </div>
+        ))}
       </div>
 
       <div className="filters-container filters-container__budget">
-        <h2 className="filters-container__title">Бюджет</h2>
+        <h2 className="filters-container__title">
+          {!isAuthenticated && isFirstTab && 'Бюджет'}
+          {!isAuthenticated && !isFirstTab && 'Ставка'}
+          {isAuthenticated && currentUser?.is_customer && isFirstTab && 'Ставка'}
+          {isAuthenticated && currentUser?.is_customer && !isFirstTab && 'Бюджет'}
+          {isAuthenticated && currentUser?.is_worker && isFirstTab && 'Бюджет'}
+        </h2>
         <form className="filters-form-budget">
-          <input
-            type="text"
-            id="filters-budget__start"
-            className="filters-budget"
+          <InputText
+            type="number"
+            name="filters-payrate-from"
+            width={241}
+            height={44}
             value={budgetStart || ''}
-            placeholder="от"
-            onChange={(event) => setBudgetStart(event.target.value)}
-            required
+            onChange={handleBudgetStart}
           />
-          <input
-            type="text"
-            id="filters-budget__end"
-            className="filters-budget"
+          <InputText
+            type="number"
+            name="filters-payrate-to"
+            width={241}
+            height={44}
             value={budgetEnd || ''}
-            placeholder="до"
-            onChange={(event) => setBudgetEnd(event.target.value)}
-            required
+            onChange={handleBudgetEnd}
           />
         </form>
       </div>
       <div className="filters-buttons">
-        <Button text="Применить фильтры" width={289} />
-        <Button text="Очистить фильтры" width={289} buttonSecondary onClick={handleBudgetClean} />
+        <Button text="Применить фильтры" width={289} onClick={handleFilter} />
+        <Button text="Очистить фильтры" width={289} buttonSecondary onClick={handleReset} />
       </div>
     </section>
   );

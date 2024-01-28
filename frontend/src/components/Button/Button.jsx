@@ -1,4 +1,3 @@
-import React from 'react';
 import './Button.css';
 
 function Button({
@@ -17,12 +16,13 @@ function Button({
   fontSize,
   fontWeight,
   opacity,
+  value,
 }) {
   return (
     <button
       className={`button${
-        buttonSecondary ? ' button_type_secondary' : disabled ? ' button_type_disabled' : ''
-      } ${buttonWhite && ' button_color_white'} ${buttonBlack && ' button_color_black'}`}
+        disabled ? ' button_type_disabled' : buttonSecondary ? ' button_type_secondary' : ''
+      }${buttonWhite ? ' button_color_white' : ''}${buttonBlack ? ' button_color_black' : ''}`}
       style={{
         width,
         height,
@@ -37,14 +37,15 @@ function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      value={value}
     >
-      <p
+      <span
         className={`button__text${
           buttonSecondary ? ' button_type_secondary__text' : ''
         } button__text${buttonBlack ? ' button_color_black__text' : ''}`}
       >
         {text}
-      </p>
+      </span>
     </button>
   );
 }

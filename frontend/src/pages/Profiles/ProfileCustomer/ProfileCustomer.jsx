@@ -1,13 +1,13 @@
-import React, { useState, useContext, useRef } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from '../../../context/context';
-import { useFormAndValidation } from '../../../hooks/useFormAndValidation';
+import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { industryAndCategoryOptions } from '../../../utils/constants';
 import * as Api from '../../../utils/Api';
 import { InputText } from '../../../components/InputComponents/InputText/InputText';
 import { InputImage } from '../../../components/InputComponents/InputImage/InputImage';
 import { InputSelect } from '../../../components/InputComponents/InputSelect/InputSelect';
-
+import { Button } from '../../../components/Button/Button';
 import '../../../components/FormComponents/FreelancerCompleteForm/FreelancerCompleteForm.css';
 import '../ProfileFreelancer/ProfileFreelancer.css';
 import '../Profile.css';
@@ -15,55 +15,63 @@ import './ProfileCustomer.css';
 
 function ProfileCustomer({ setCurrentUser }) {
   const { currentUser } = useContext(Context);
-  const { values, errors, handleChange, setValues } = useFormAndValidation();
+
+  const { values, errors, isValid, handleChange, setValues, setErrors, setIsValid, checkErrors } =
+    useFormAndValidation();
+
   const [isEditable, setIsEditable] = useState(false);
-  const [photo, setPhoto] = useState(null);
-  const formRef = useRef(null);
+  const [photo, setPhoto] = useState();
+  const formReference = useRef(null);
+  const initialData = {
+    name: currentUser?.name || '',
+    industry: currentUser?.industry?.name || '',
+    about: currentUser?.about || '',
+    web: currentUser?.web || '',
+  };
+
+  const isDisabled = !values.name || !values.industry || !isValid;
 
   function addPhoto(url) {
     setPhoto({ photo: url });
   }
 
+  useEffect(() => {
+    setValues(initialData);
+  }, []);
+
+  useEffect(() => {
+    const valid = checkErrors(errors);
+    setIsValid(valid);
+  }, [isValid, errors]);
+
+  function handleCancel() {
+    setValues(initialData);
+    setIsEditable(false);
+    setErrors({});
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
 
-    setValues({
-      name: currentUser?.name || '',
-      industry: currentUser?.industry?.name || '',
-    });
-
-    // let newErrors = {};
-
-    // if (!values.name) {
-    //   newErrors = {...newErrors, name: 'Введите название компании'};
-    // }
-
-    // setErrors({ ...errors, ...newErrors });
-
-    // if (
-    // isValid
-    // &&
-    // values.name
-    // && values.email
-    // ) {
-    const newData = {
-      photo: photo?.photo,
-      name: values?.name || currentUser?.name,
-      industry: {
-        name: values?.industry || currentUser?.industry?.name,
-      },
-      about: values?.about,
-      web: values?.web,
-    };
-    Api.updateUserProfile(newData)
-      .then((result) => {
-        setCurrentUser(result);
-        setIsEditable(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    // }
+    if (values.name && values.industry && isValid) {
+      const newData = {
+        photo: photo?.photo,
+        name: values?.name || currentUser?.name,
+        industry: {
+          name: values?.industry || currentUser?.industry?.name,
+        },
+        about: values?.about,
+        web: values?.web,
+      };
+      Api.updateUserProfile(newData)
+        .then((result) => {
+          setCurrentUser(result);
+          setIsEditable(false);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }
 
   return (
@@ -76,7 +84,8 @@ function ProfileCustomer({ setCurrentUser }) {
             height={80}
             value={values.photo || currentUser?.photo || ''}
             error={errors.photo}
-            errorMessage={errors.photo}
+            setErrors={setErrors}
+            // errors={errors}
             onChange={addPhoto}
             isDisabled={!isEditable}
           />
@@ -96,22 +105,24 @@ function ProfileCustomer({ setCurrentUser }) {
       </div>
 
       <div className="profile_block profile__form-container">
-        <form className="form-profile" onSubmit={handleSubmit} ref={formRef}>
+        <form className="form-profile" onSubmit={handleSubmit} ref={formReference}>
           <div className="form-profile__top-container">
             <h2 className="profile__title">Информация об аккаунте</h2>
             {isEditable ? (
               <>
                 <button
                   type="button"
-                  onClick={() => {
-                    // formRef.current.reset();
-                    setIsEditable(false);
-                  }}
-                  className="form-top-buttons form-top-buttons_type_cansel"
+                  onClick={handleCancel}
+                  className="form-top-buttons form-top-buttons_type_cancel"
                 >
                   Отмена
                 </button>
-                <button type="submit" className="form-top-buttons form-top-buttons_type_submit">
+                <button
+                  type="submit"
+                  className={`form-top-buttons form-top-buttons_type_submit 
+                  ${isDisabled ? 'form-top-buttons_type_submit-disabled' : ''}`}
+                  disabled={isDisabled}
+                >
                   Сохранить
                 </button>
               </>
@@ -138,7 +149,6 @@ function ProfileCustomer({ setCurrentUser }) {
               width="100%"
               value={values.email || currentUser?.account_email || ''}
               error={errors.email}
-              errorMessage={errors.email}
               onChange={handleChange}
               id="email"
               isDisabled
@@ -158,9 +168,8 @@ function ProfileCustomer({ setCurrentUser }) {
               autoComplete="name"
               name="name"
               width="100%"
-              value={values.name || currentUser?.name || ''}
+              value={isEditable ? values?.name || '' : currentUser?.name || ''}
               error={errors.name}
-              errorMessage={errors.name}
               onChange={handleChange}
               id="companyName"
               isDisabled={!isEditable}
@@ -174,7 +183,8 @@ function ProfileCustomer({ setCurrentUser }) {
               placeholder="Выберите из списка"
               width="100%"
               onChange={handleChange}
-              value={values.industry || currentUser.industry?.name || ''}
+              value={isEditable ? values?.industry || '' : currentUser?.industry?.name || ''}
+              error={errors.industry}
               options={industryAndCategoryOptions}
               isDisabled={!isEditable}
             />
@@ -190,9 +200,8 @@ function ProfileCustomer({ setCurrentUser }) {
               name="about"
               width="100%"
               height={150}
-              value={values.about || currentUser?.about || ''}
+              value={isEditable ? values?.about || '' : currentUser?.about || values?.about || ''}
               error={errors.about}
-              errorMessage={errors.about}
               onChange={handleChange}
               id="aboutMe"
               isDisabled={!isEditable}
@@ -208,9 +217,8 @@ function ProfileCustomer({ setCurrentUser }) {
               placeholder="https://example.com"
               name="web"
               width="100%"
-              value={values.web || currentUser?.web || ''}
+              value={isEditable ? values?.web || '' : currentUser?.web || values?.web || ''}
               error={errors.web}
-              errorMessage={errors.web}
               onChange={handleChange}
               id="website"
               isDisabled={!isEditable}
@@ -227,16 +235,17 @@ function ProfileCustomer({ setCurrentUser }) {
               <button
                 type="button"
                 className="profile__main-text form-profile__bottom-buttons"
-                onClick={() => setIsEditable(false)}
+                onClick={handleCancel}
               >
                 Отмена
               </button>
-              <button
+              <Button
+                width={289}
+                text="Сохранить"
                 type="submit"
                 className="profile__main-text form-profile__bottom-buttons form-profile__bottom-buttons_type_submit"
-              >
-                Сохранить
-              </button>
+                disabled={isDisabled}
+              />
             </div>
           )}
         </form>

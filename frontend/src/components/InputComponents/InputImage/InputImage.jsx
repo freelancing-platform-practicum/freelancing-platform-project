@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './InputImage.css';
 
-function InputImage({ name, value, onChange, width, height, isDisabled }) {
-  const [file, setFile] = useState(null);
-  const [error, setError] = useState('');
+function InputImage({ name, value, onChange, width, height, isDisabled, setErrors, error }) {
+  const [file, setFile] = useState();
+  // const [error, setError] = useState('');
   const allowedFileTypes = ['image/png', 'image/jpg', 'image/jpeg'];
   const inputStyle = {};
 
@@ -17,6 +17,7 @@ function InputImage({ name, value, onChange, width, height, isDisabled }) {
 
   const handleChange = (event) => {
     const selectedFile = event.currentTarget.files[0];
+    // console.log(selectedFile);
     setFile(URL.createObjectURL(selectedFile));
 
     const reader = new FileReader();
@@ -27,16 +28,19 @@ function InputImage({ name, value, onChange, width, height, isDisabled }) {
     };
 
     reader.onerror = () => {
-      console.error(reader.error);
+      // console.error(reader.error);
     };
 
     if (selectedFile) {
-      if (allowedFileTypes.includes(selectedFile.type) && selectedFile.size < 52428800) {
+      if (allowedFileTypes.includes(selectedFile.type) && selectedFile.size < 52_428_800) {
         // setFile(selectedFile);
-        setError('');
+        // setError('');
+        // console.log(selectedFile)
+        setErrors({ ...error, photo: '' });
       } else {
-        setFile(null);
-        setError('Выберите файл в формате PNG, JPG или JPEG до 50 МБ.');
+        setFile(undefined);
+        setErrors({ ...error, photo: 'Выберите файл в формате PNG, JPG или JPEG до 50 МБ.' });
+        // setError('Выберите файл в формате PNG, JPG или JPEG до 50 МБ.');
       }
     }
   };

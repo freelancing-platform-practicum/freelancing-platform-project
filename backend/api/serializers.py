@@ -7,11 +7,12 @@ from rest_framework import serializers
 from api.utils import CustomBase64ImageField
 from chat.models import Chat, Message
 from orders.models import Job, JobCategory, JobFile, JobResponse, StackJob
-from taski.settings import (ASK_MSG, BUDGET_DATA_ERR, CATEGORY_CHOICES,
-                            CHAT_ALREADY_EXISTS_ERR, CURRENT_DATE_ERR,
-                            DATE_FORMAT_ERR, DATETIME_FORMAT,
-                            FILE_OVERSIZE_ERR, JOB_ALREADY_APPLIED_ERR,
-                            MAX_FILE_SIZE, STACK_ERR_MSG)
+from taski.settings import (ASK_MSG, BUDGET_DATA_ERR, BUDGET_ERR,
+                            CATEGORY_CHOICES, CHAT_ALREADY_EXISTS_ERR,
+                            CURRENT_DATE_ERR, DATE_FORMAT_ERR, DATETIME_FORMAT,
+                            DEADLINE_ERR, FILE_OVERSIZE_ERR,
+                            JOB_ALREADY_APPLIED_ERR, MAX_FILE_SIZE,
+                            STACK_ERR_MSG)
 from users.clients import GetCustomerProfileSerializer, IndustrySerializer
 from users.freelancers import GetWorkerProfileSerializer
 from users.models import CustomerProfile as Client
@@ -87,11 +88,26 @@ class FreelancerSerializer(GetWorkerProfileSerializer):
 
 class ResponseFreelancersSerializer(serializers.ModelSerializer):
     """Получение списка фрилансеров, которые откликнулись на задание."""
-    freelancer = FreelancerSerializer()
 
     class Meta:
         model = JobResponse
-        fields = '__all__'
+        fields = ['id', 'job', 'freelancer']
+
+    def to_representation(self, instance):
+        # Преобразование вложенного объекта Freelancer в нужный формат
+        # c добавлением полей фрилансера на один уровень с 'id' и 'job'
+        representation = super().to_representation(instance)
+        freelancer_data = FreelancerSerializer(instance.freelancer).data
+        representation.update({
+            'user': freelancer_data['user'],
+            'photo': freelancer_data['photo'],
+            'about': freelancer_data['about'],
+            'stacks': freelancer_data['stacks'],
+            'payrate': freelancer_data['payrate'],
+            'categories': freelancer_data['categories'],
+        })
+        representation.pop('freelancer')
+        return representation
 
 
 class JobFileSerializer(serializers.ModelSerializer):
@@ -130,9 +146,9 @@ class JobListSerializer(serializers.ModelSerializer):
                   'description', 'job_files', 'is_responded', 'pub_date')
 
     def get_budget(self, obj):
-        if obj.budget == "Жду предложений" or not obj.budget.isdigit():
-            return obj.budget
-        return int(obj.budget)
+        if obj.budget is not None and obj.budget.isdigit():
+            return int(obj.budget)
+        return obj.budget
 
     def get_is_responded(self, obj):
         """
@@ -174,6 +190,26 @@ class JobCreateSerializer(serializers.ModelSerializer):
                   'budget', 'ask_budget', 'deadline', 'ask_deadline',
                   'description', 'job_files',)
 
+    def validate(self, data):
+        """
+        Проверка, чтобы в полях
+        "budget" и "ask_budget", и соответственно "deadline" и "ask_deadline"
+        не было одновременно null и false.
+        """
+        budget = data.get('budget')
+        ask_budget = data.get('ask_budget')
+        if budget is None and ask_budget is False:
+            raise serializers.ValidationError(BUDGET_ERR)
+        data['budget'] = self.validate_budget(budget)
+
+        deadline = data.get('deadline')
+        ask_deadline = data.get('ask_deadline')
+        if deadline is None and ask_deadline is False:
+            raise serializers.ValidationError(DEADLINE_ERR)
+        data['deadline'] = self.validate_deadline(deadline)
+
+        return data
+
     def validate_stack(self, data):
         if data == []:
             raise serializers.ValidationError(STACK_ERR_MSG)
@@ -201,7 +237,7 @@ class JobCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         stack_data = validated_data.pop('stack')
         category_data = validated_data.pop('category')
-        job_files_data = validated_data.pop('job_files')
+        job_files_data = validated_data.pop('job_files', [])
         ask_budget = validated_data.pop('ask_budget', False)
         ask_deadline = validated_data.pop('ask_deadline', False)
         if ask_budget:
@@ -233,21 +269,26 @@ class JobCreateSerializer(serializers.ModelSerializer):
                                             instance.title)
         instance.description = validated_data.get('description',
                                                   instance.description)
-        ask_budget = validated_data.get('ask_budget',
-                                        instance.ask_budget)
-        if ask_budget:
-            instance.budget = ASK_MSG
-        else:
-            instance.budget = validated_data.get('budget',
-                                                 instance.budget)
+        ask_budget_present = 'ask_budget' in validated_data
+        if ask_budget_present:
+            ask_budget = validated_data.pop('ask_budget', instance.ask_budget)
+            if ask_budget:
+                instance.budget = ASK_MSG
+                instance.ask_budget = True
+            else:
+                instance.budget = validated_data.get('budget',
+                                                     instance.budget)
+                instance.ask_budget = False
 
-        ask_deadline = validated_data.get('ask_deadline',
-                                          instance.ask_deadline)
-        if ask_deadline:
-            instance.deadline = ASK_MSG
-        else:
-            instance.deadline = validated_data.get('deadline',
-                                                   instance.deadline)
+        ask_deadline_present = 'ask_deadline' in validated_data
+        if ask_deadline_present:
+            ask_deadline = validated_data.get('ask_deadline',
+                                              instance.ask_deadline)
+            if ask_deadline:
+                instance.deadline = ASK_MSG
+            else:
+                instance.deadline = validated_data.get('deadline',
+                                                       instance.deadline)
         category_data = validated_data.get('category')
         if category_data:
             instance.category.set(category_data)

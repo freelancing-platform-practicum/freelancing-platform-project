@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFormAndValidation } from '../../../hooks/useFormAndValidation';
+import { useState, useContext, useEffect } from 'react';
+import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { industryAndCategoryOptions, degreeOptions } from '../../../utils/constants';
 import { InputText } from '../../InputComponents/InputText/InputText';
 import { InputImage } from '../../InputComponents/InputImage/InputImage';
@@ -8,40 +8,65 @@ import { InputTags } from '../../InputComponents/InputTags/InputTags';
 import { InputSelect } from '../../InputComponents/InputSelect/InputSelect';
 import { InputSwitch } from '../../InputComponents/InputSwitch/InputSwitch';
 import { Button } from '../../Button/Button';
+import { Context } from '../../../context/context';
 import './FreelancerCompleteForm.css';
 
-// const MAX_ATTACHED_DOCS = 8;
-
 function FreelancerCompleteForm({ onSubmit }) {
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [portfolioFile, setPortfolioFile] = useState(null);
-  const [document, setDocument] = useState(null);
+  const { currentUser } = useContext(Context);
+  const [profilePhoto, setProfilePhoto] = useState({});
+  const [portfolioFile, setPortfolioFile] = useState();
+  const [document, setDocument] = useState();
   // const [docKeysPortfolio, setDocKeysPortfolio] = useState([Date.now()]);
-  const { values, errors, handleChange, setErrors } = useFormAndValidation();
+  const {
+    values,
+    errors,
+    handleChange,
+    handleChangeCustom,
+    setErrors,
+    setValues,
+    // checkErrors,
+    // setIsValid,
+    isValid,
+  } = useFormAndValidation();
   const [tags, setTags] = useState([]);
 
+  useEffect(() => {
+    setTags([]);
+    setDocument({});
+    setPortfolioFile({});
+    setProfilePhoto({});
+    setValues({});
+    setValues({
+      first_name: currentUser.user.first_name,
+      last_name: currentUser.user.last_name,
+      email: currentUser.account_email || currentUser.user.email,
+    });
+  }, [currentUser]);
+
+  /*
+  useEffect(() => {
+    const valid = checkErrors(errors)
+    setIsValid(valid)
+  }, [isValid, errors])
+*/
   function addProfilePhoto(url) {
     setProfilePhoto({ photo: url });
+    // console.log(url);
   }
 
-  function addPortfolioFile(items) {
-    setPortfolioFile(items);
+  function addPortfolioFile(files) {
+    // console.log(files);
+    setPortfolioFile({ files });
   }
 
-  function addDocument(items) {
-    setDocument(items);
+  function addDocument(files) {
+    // console.log(files);
+    setDocument({ files });
   }
+  // console.log(document?.files, document?.files?.length);
 
-  // const handleDocPortfolioChange = (event) => {
-  //   handleChange(event);
-  //   if (event.currentTarget.files[0]) {
-  //     setDocKeysPortfolio(prevKeys => [...prevKeys, Date.now()]);
-  //   }
-  // };
-  //
-  // const onDeleteDocPortfolioClick = (key) => {
-  //   setDocKeysPortfolio(prevKeys => prevKeys.filter(prevKey => prevKey !== key));
-  // }
+  // console.log(document?.file?.file)
+  // console.log(isValid)
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -62,50 +87,132 @@ function FreelancerCompleteForm({ onSubmit }) {
 
     setErrors({ ...errors, ...newErrors });
 
-    // if (
-    //   isValid &&
-    //   values.first_name &&
-    //   values.last_name &&
-    //   values.email
-    // ) {
-    //   setValues({
-    //     ...values,
-    //     first_name: '',
-    //     last_name: '',
-    //     email: '',
-    //   });
+    let allValues = {
+      categories: [
+        {
+          name: values.activity,
+        },
+      ],
+    };
 
-    //  setIsAuthenticated(true)
-    // setCurrentUser({
-    //   id: "1",
-    //   first_name: values.first_name,
-    //   last_name: values.last_name,
-    //   email: values.email,
-    //   password: "topSecret1",
-    //   role: "Фрилансер",
-    //   rate: "300",
-    //   portfolio: "https://myportfolio.ru",
-    //   skills: ['CSS', 'HTML', 'JavaScript'],
-    //   education: 'МГУ имени М.В. Ломоносова',
-    // })
+    if (
+      values.education ||
+      values.faculty ||
+      values.start_year ||
+      values.finish_year ||
+      values.degree ||
+      document?.files?.length
+    ) {
+      allValues.education = [];
+      let educationValues = {};
 
-    onSubmit({ profilePhoto, portfolioFile, document, values, tags });
-    // }
+      if (document?.files?.length) {
+        educationValues.diploma = document.files;
+      }
+      if (values.education) {
+        educationValues.name = values.education;
+      }
+
+      if (values.faculty) {
+        educationValues.faculty = values?.faculty;
+      }
+
+      if (values.start_year) {
+        educationValues.start_year = values?.start_year;
+      }
+
+      if (values.finish_year) {
+        educationValues.finish_year = values?.finish_year;
+      }
+      if (values.degree) {
+        educationValues.degree = values?.degree;
+      }
+
+      allValues.education.push(educationValues);
+    }
+
+    if (tags.length > 0) {
+      allValues.stacks = tags?.map((tag) => ({ name: tag }));
+    }
+
+    if (
+      values?.phone ||
+      values?.email ||
+      values?.telegram ||
+      values?.otherContact ||
+      values?.preferred
+    ) {
+      allValues.contacts = [];
+    }
+
+    if (values?.phone) {
+      allValues.contacts.push({
+        type: 'phone',
+        value: values?.phone,
+        preferred: values?.preferred === 'phone',
+      });
+    }
+
+    if (values?.email) {
+      allValues.contacts.push({
+        type: 'email',
+        value: values?.email,
+        preferred: values?.preferred === 'email',
+      });
+    }
+
+    if (values?.telegram) {
+      allValues.contacts.push({
+        type: 'telegram',
+        value: values?.telegram,
+        preferred: values?.preferred === 'telegram',
+      });
+    }
+
+    if (values?.otherContact) {
+      allValues.contacts.push({
+        type: 'other',
+        value: values?.otherContact,
+        preferred: values?.preferred === 'otherContact',
+      });
+    }
+
+    if (profilePhoto.photo) {
+      allValues.photo = profilePhoto.photo;
+    }
+
+    if (portfolioFile.files) {
+      allValues.portfolioFile = portfolioFile.files;
+    }
+
+    if (values.payrate) {
+      allValues.payrate = values.payrate;
+    }
+
+    if (values.about) {
+      allValues.about = values.about;
+    }
+
+    if (values.web) {
+      allValues.web = values.web;
+    }
+
+    onSubmit(allValues);
   };
 
   return (
-    <form className="freelancer-complete-form" onSubmit={handleSubmit}>
+    <form className="freelancer-complete-form" onSubmit={handleSubmit} noValidate={true}>
       <div className="freelancer-complete-form__image-input">
         <InputImage
           name="profilePhoto"
           value={values.profilePhoto || ''}
           error={errors.profilePhoto}
-          errorMessage={errors.profilePhoto}
           onChange={addProfilePhoto}
+          setErrors={setErrors}
         />
       </div>
       <div>
-        <p className="freelancer-complete-form__input-text">Имя Фамилия</p>
+        <p className="freelancer-complete-form__input-text">Имя</p>
         <InputText
           type="text"
           placeholder="Имя"
@@ -114,20 +221,22 @@ function FreelancerCompleteForm({ onSubmit }) {
           width={610}
           value={values.first_name || ''}
           error={errors.first_name}
-          errorMessage={errors.first_name}
           onChange={handleChange}
+          minLength={80}
+          required={true}
         />
+        <p className="freelancer-complete-form__input-text">Фамилия</p>
         <InputText
           type="text"
           placeholder="Фамилия"
           autoComplete="family-name"
           name="last_name"
           width={610}
-          marginTop={12}
           value={values.last_name || ''}
           error={errors.last_name}
-          errorMessage={errors.last_name}
           onChange={handleChange}
+          minLength={80}
+          required={true}
         />
       </div>
       <div>
@@ -141,7 +250,6 @@ function FreelancerCompleteForm({ onSubmit }) {
             width={328}
             value={values.phone || ''}
             error={errors.phone}
-            errorMessage={errors.phone}
             onChange={handleChange}
           />
           <InputSwitch
@@ -150,6 +258,7 @@ function FreelancerCompleteForm({ onSubmit }) {
             label="Предпочтительный вид связи"
             value="phone"
             onChange={handleChange}
+            error={errors.preferred}
           />
           <InputText
             type="email"
@@ -158,8 +267,6 @@ function FreelancerCompleteForm({ onSubmit }) {
             name="email"
             width={328}
             value={values.email || ''}
-            error={errors.email}
-            errorMessage={errors.email}
             onChange={handleChange}
           />
           <InputSwitch
@@ -177,7 +284,6 @@ function FreelancerCompleteForm({ onSubmit }) {
             width={328}
             value={values.telegram || ''}
             error={errors.telegram}
-            errorMessage={errors.telegram}
             onChange={handleChange}
           />
           <InputSwitch
@@ -185,6 +291,22 @@ function FreelancerCompleteForm({ onSubmit }) {
             name="preferred"
             label="Предпочтительный вид связи"
             value="telegram"
+            onChange={handleChange}
+          />
+          <InputText
+            type="url"
+            placeholder="Ссылка на другой сайт"
+            name="otherContact"
+            width={328}
+            value={values.otherContact || ''}
+            error={errors.otherContact}
+            onChange={handleChange}
+          />
+          <InputSwitch
+            type="radio"
+            name="preferred"
+            label="Предпочтительный вид связи"
+            value="otherContact"
             onChange={handleChange}
           />
         </div>
@@ -196,14 +318,20 @@ function FreelancerCompleteForm({ onSubmit }) {
           placeholder="Выберите из списка"
           value={values.activity || ''}
           error={errors.activity}
-          errorMessage={errors.activity}
           onChange={handleChange}
           options={industryAndCategoryOptions}
+          required={true}
         />
       </div>
       <div>
         <p className="freelancer-complete-form__input-text">Навыки</p>
-        <InputTags name="stacks" tags={tags} setTags={setTags} />
+        <InputTags
+          name="stacks"
+          tags={tags}
+          setTags={setTags}
+          handleChange={handleChangeCustom}
+          error={errors.tags}
+        />
       </div>
       <div>
         <p className="freelancer-complete-form__input-text">Ставка в час</p>
@@ -214,8 +342,8 @@ function FreelancerCompleteForm({ onSubmit }) {
           width={295}
           value={values.payrate || ''}
           error={errors.payrate}
-          errorMessage={errors.payrate}
           onChange={handleChange}
+          maxLength={10}
         />
       </div>
       <div>
@@ -228,8 +356,8 @@ function FreelancerCompleteForm({ onSubmit }) {
           height={150}
           value={values.about || ''}
           error={errors.about}
-          errorMessage={errors.about}
           onChange={handleChange}
+          maxLength={500}
         />
       </div>
 
@@ -241,7 +369,6 @@ function FreelancerCompleteForm({ onSubmit }) {
             name="portfolio"
             value={values.portfolio || ''}
             error={errors.portfolio}
-            errorMessage={errors.portfolio}
             onChange={addPortfolioFile}
             // isDisabled={false}
             // onChange={(event) => handleDocPortfolioChange(event, key)} key={key}
@@ -260,7 +387,6 @@ function FreelancerCompleteForm({ onSubmit }) {
           width={610}
           value={values.web || ''}
           error={errors.web}
-          errorMessage={errors.web}
           onChange={handleChange}
         />
       </div>
@@ -273,7 +399,6 @@ function FreelancerCompleteForm({ onSubmit }) {
           width={610}
           value={values.education || ''}
           error={errors.education}
-          errorMessage={errors.education}
           onChange={handleChange}
         />
       </div>
@@ -287,7 +412,6 @@ function FreelancerCompleteForm({ onSubmit }) {
             width={295}
             value={values.start_year || ''}
             error={errors.start_year}
-            errorMessage={errors.start_year}
             onChange={handleChange}
           />
           <InputText
@@ -297,8 +421,8 @@ function FreelancerCompleteForm({ onSubmit }) {
             width={295}
             value={values.finish_year || ''}
             error={errors.finish_year}
-            errorMessage={errors.finish_year}
             onChange={handleChange}
+            isDisabled={values.degree === 'student'}
           />
         </div>
       </div>
@@ -309,7 +433,6 @@ function FreelancerCompleteForm({ onSubmit }) {
           placeholder="Выберите из списка"
           value={values.degree || ''}
           error={errors.degree}
-          errorMessage={errors.degree}
           onChange={handleChange}
           options={degreeOptions}
         />
@@ -323,7 +446,6 @@ function FreelancerCompleteForm({ onSubmit }) {
           width={610}
           value={values.faculty || ''}
           error={errors.faculty}
-          errorMessage={errors.faculty}
           onChange={handleChange}
         />
       </div>
@@ -337,13 +459,18 @@ function FreelancerCompleteForm({ onSubmit }) {
             name="diploma"
             value={values.diploma || ''}
             error={errors.diploma}
-            errorMessage={errors.diploma}
             onChange={addDocument}
           />
         </div>
       </div>
 
-      <Button text="Создать профиль" width={289} marginTop={60} marginBottom={200} />
+      <Button
+        text="Создать профиль"
+        disabled={!isValid}
+        width={289}
+        marginTop={60}
+        marginBottom={200}
+      />
     </form>
   );
 }

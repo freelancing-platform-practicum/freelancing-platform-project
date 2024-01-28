@@ -15,6 +15,9 @@ class IsAdminOrReadOnly(permissions.BasePermission):
             )
         )
 
+    def has_object_permission(self, request, _, obj):
+        return request.user.is_authenticated
+
 
 class IsFreelancer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -37,7 +40,7 @@ class IsCustomerOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, _, obj):
         return (request.user.is_customer
-                and obj.client == request.user)
+                and obj.client == request.user.customerprofile)
 
 
 class IsJobAuthor(permissions.BasePermission):

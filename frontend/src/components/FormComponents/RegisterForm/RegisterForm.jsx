@@ -1,20 +1,21 @@
-import React from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from '../../../context/context';
-import { useFormAndValidation } from '../../../hooks/useFormAndValidation';
+import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { Button } from '../../Button/Button';
 import { InputText } from '../../InputComponents/InputText/InputText';
 import './RegisterForm.css';
 
 function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
-  const { logIn } = React.useContext(Context);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [buttonClicked, setButtonClicked] = React.useState(false);
-  const [role, setRole] = React.useState({
+  const { logIn } = useContext(Context);
+  const [showPassword, setShowPassword] = useState(false);
+  const [buttonClicked, setButtonClicked] = useState(false);
+  const [role, setRole] = useState({
     is_customer: true,
     is_worker: false,
   });
-  const { values, errors, isValid, handleChange, setValues, setErrors } = useFormAndValidation();
+  const { values, errors, isValid, checkErrors, handleChange, setValues, setErrors, setIsValid } =
+    useFormAndValidation();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -32,7 +33,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValues((previousValues) => ({
       ...previousValues,
       is_customer: role.is_customer,
@@ -40,7 +41,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
     }));
   }, [role.is_customer, role.is_worker, setValues]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isError) {
       let newErrors = {};
 
@@ -57,8 +58,15 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
         setErrors({ ...errors, ...newErrors });
       }
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buttonClicked, isError]);
+
+  useEffect(() => {
+    const valid = checkErrors(errors);
+    setIsValid(valid);
+    // console.log('UseEff', valid, isValid, errors);
+  }, [isValid, errors]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -113,7 +121,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
   };
 
   return (
-    <form className="register" onSubmit={handleSubmit}>
+    <form className="register" onSubmit={handleSubmit} noValidate={true}>
       <div className="register__form">
         <div className="register__form-role-container">
           <Button
@@ -153,7 +161,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           onChange={handleChange}
           value={values.first_name || ''}
           error={errors.first_name}
-          errorMessage={errors.first_name}
+          maxLength={80}
         />
         <InputText
           placeholder="Фамилия"
@@ -165,7 +173,7 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           onChange={handleChange}
           value={values.last_name || ''}
           error={errors.last_name}
-          errorMessage={errors.last_name}
+          maxLength={80}
         />
         <InputText
           placeholder="Эл. почта"
@@ -177,7 +185,6 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           onChange={handleChange}
           value={values.email || ''}
           error={errors.email}
-          errorMessage={errors.email}
         />
         <InputText
           placeholder="Пароль"
@@ -190,7 +197,6 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           onChange={handleChange}
           value={values.password || ''}
           error={errors.password}
-          errorMessage={errors.password}
         />
         <InputText
           placeholder="Повторите пароль"
@@ -202,7 +208,6 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           onChange={handleChange}
           value={values.re_password || ''}
           error={errors.re_password}
-          errorMessage={errors.re_password}
         />
         <div style={{ marginBottom: 60 }} />
         <Button
@@ -210,13 +215,12 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
           width={400}
           type="submit"
           disabled={
-            (!isValid ||
-              !values.email ||
-              !values.password ||
-              !values.re_password ||
-              !values.first_name ||
-              !values.last_name) &&
-            buttonClicked
+            !isValid ||
+            !values.email ||
+            !values.password ||
+            !values.re_password ||
+            !values.first_name ||
+            !values.last_name
           }
         />
         <div className="register__footer-link-container">

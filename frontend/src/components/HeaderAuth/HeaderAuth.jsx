@@ -1,11 +1,10 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './HeaderAuth.css';
 
 function HeaderAuth() {
   const location = useLocation();
-  const regTextStyle = `header-auth__singup-button ${
-    location.pathname === '/' ? 'header-auth__singup-button_main-page' : ''
+  const regTextStyle = `header-auth__singup-button${
+    location.pathname === '/' ? ' header-auth__singup-button_main-page' : ''
   }`;
 
   return (

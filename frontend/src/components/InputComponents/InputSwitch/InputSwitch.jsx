@@ -1,22 +1,22 @@
-import React from 'react';
 import './InputSwitch.css';
 
 function InputSwitch({
   id,
+  name,
   type,
   label,
   value,
-  onChange,
   marginTop,
-  name,
+  gap,
+  color,
   error,
-  errorMessage,
   isDisabled,
   defaultChecked,
+  onChange,
 }) {
   return (
     <div className="input-switch__container">
-      <label className="input-switch__label" style={{ marginTop }}>
+      <label className="input-switch__label" style={{ color, marginTop, columnGap: gap }}>
         <input
           className={`input-switch__input${
             type === 'radio'
@@ -34,7 +34,7 @@ function InputSwitch({
         />
         {label}
       </label>
-      <span className="input-switch__error-text">{errorMessage}</span>
+      <span className="input-switch__error-text">{error}</span>
     </div>
   );
 }

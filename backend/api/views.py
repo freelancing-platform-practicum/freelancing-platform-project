@@ -44,7 +44,7 @@ class JobViewSet(ModelViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, DjangoFilterBackend,)
     filterset_class = JobFilter
-    search_fields = ['title', 'description']
+    search_fields = ['title', 'description', 'stack__name']
 
     def get_serializer_class(self):
         if self.action == 'response':
@@ -58,7 +58,7 @@ class JobViewSet(ModelViewSet):
     def get_permissions(self):
         if self.action == 'offers':
             permission_classes = (IsJobAuthor,)
-        elif self.action in ['create', 'update']:
+        elif self.action in ['create', 'update', 'partial_update']:
             permission_classes = (IsCustomerOrReadOnly,)
         elif self.action == 'response':
             permission_classes = (IsFreelancer,)
@@ -110,7 +110,13 @@ class JobViewSet(ModelViewSet):
             permission_classes=(IsJobAuthor,),
             pagination_class=PageNumberPagination,
             filter_backends=(SearchFilter, DjangoFilterBackend,),
-            filterset_class=JobResponsesFilter
+            filterset_class=JobResponsesFilter,
+            search_fields=('freelancer__user__first_name',
+                           'freelancer__user__last_name',
+                           'freelancer__stacks__name',
+                           'freelancer__categories__name',
+                           'freelancer__categories__slug',
+                           'freelancer__about')
             )
     def offers(self, _, pk=None):
         """
@@ -118,6 +124,7 @@ class JobViewSet(ModelViewSet):
         Доступно только автору задания.
         Представлен с пагинацей.
         Есть фильтр по ставке: min_payrate и max_payrate.
+        Есть поиск по имени, фамилии, навыкам, специализации фрилансера.
         """
         job = get_object_or_404(Job, pk=pk)
         responses = job.responses.all().order_by('id')
@@ -153,7 +160,7 @@ class ChatViewSet(CreateListViewSet):
     queryset = Chat.objects.all()
     permission_classes = (ChatPermission,)
     filter_backends = (SearchFilter,)
-    search_fields = ['@title']
+    search_fields = ['title', 'freelancer', 'customer', 'job']
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
