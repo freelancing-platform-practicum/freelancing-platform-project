@@ -1,15 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-# from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from taski.settings import CATEGORY_CHOICES, FILE_OVERSIZE_ERR, MAX_FILE_SIZE
+
 from .fields import CustomizedBase64FileField, CustomizedBase64ImageField
-from .models import (CATEGORY_CHOICES, Category, Contact, DiplomaFile,
-                     Education, EducationDiploma, FreelancerCategory,
-                     FreelancerContact, FreelancerEducation,
-                     FreelancerPortfolio, FreelancerStack, PortfolioFile,
-                     Stack, WorkerProfile)
+from .models import (Category, Contact, DiplomaFile, Education,
+                     EducationDiploma, FreelancerCategory, FreelancerContact,
+                     FreelancerEducation, FreelancerPortfolio, FreelancerStack,
+                     PortfolioFile, Stack, WorkerProfile)
 from .serializers import DynamicFieldsModelSerializer
 
 User = get_user_model()
@@ -56,21 +56,31 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class DiplomaFileSerializer(serializers.ModelSerializer):
-    # file = CustomizedBase64ImageField()
     file = CustomizedBase64FileField()
 
     class Meta:
         model = DiplomaFile
         fields = '__all__'
 
+    def validate_file(self, value):
+        if value:
+            if value.size > MAX_FILE_SIZE:
+                raise ValidationError(FILE_OVERSIZE_ERR)
+        return value
+
 
 class PortfolioFileSerializer(serializers.ModelSerializer):
-    # file = CustomizedBase64ImageField(required=False)
     file = CustomizedBase64FileField(required=False)
 
     class Meta:
         model = PortfolioFile
         fields = '__all__'
+
+    def validate_file(self, value):
+        if value:
+            if value.size > MAX_FILE_SIZE:
+                raise ValidationError(FILE_OVERSIZE_ERR)
+        return value
 
 
 class EducationSerializer(serializers.ModelSerializer):
