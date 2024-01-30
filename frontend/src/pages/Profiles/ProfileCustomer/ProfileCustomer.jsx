@@ -115,7 +115,7 @@ function ProfileCustomer({ setCurrentUser }) {
                   onClick={handleCancel}
                   className="form-top-buttons form-top-buttons_type_cancel"
                 >
-                  Отмена
+                  Отменить
                 </button>
                 <button
                   type="submit"
@@ -237,7 +237,7 @@ function ProfileCustomer({ setCurrentUser }) {
                 className="profile__main-text form-profile__bottom-buttons"
                 onClick={handleCancel}
               >
-                Отмена
+                Отменить
               </button>
               <Button
                 width={289}

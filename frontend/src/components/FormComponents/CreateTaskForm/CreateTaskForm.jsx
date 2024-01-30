@@ -24,8 +24,6 @@ function CreateTaskForm({ onSubmit }) {
     handleChangeCustom,
   } = useFormAndValidation();
 
-  // console.log(values);
-
   const valuesArray = [
     !values.title,
     !values.activity,
@@ -37,12 +35,8 @@ function CreateTaskForm({ onSubmit }) {
   ];
   const isDisabled = valuesArray.some(Boolean);
 
-  const [document, setDocument] = useState();
+  const [portfolioFiles, setPortfolioFiles] = useState([]);
   const [tags, setTags] = useState([]);
-
-  function addDocument(items) {
-    setDocument(items);
-  }
 
   useEffect(() => {
     setIsValid(checkErrors(errors));
@@ -66,8 +60,8 @@ function CreateTaskForm({ onSubmit }) {
       allValues.budget = Number.parseInt(values.budget, 10);
     }
 
-    if (document) {
-      allValues.file = document;
+    if (portfolioFiles) {
+      allValues.file = portfolioFiles;
     }
 
     onSubmit(allValues);
@@ -173,10 +167,10 @@ function CreateTaskForm({ onSubmit }) {
         <div className="create-task-form__input-doc-wrapper">
           <InputDocument
             name="portfolio"
-            onChange={addDocument}
-            setErrors={setErrors}
+            value={portfolioFiles}
+            setValue={setPortfolioFiles}
             error={errors.portfolio}
-            // errors={errors}
+            setErrors={setErrors}
           />
         </div>
       </div>

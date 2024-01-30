@@ -52,7 +52,14 @@ function InputText({
         required={required}
         {...inputProperties}
       />
-      {pass && <button className="input__show-pass" type="button" onClick={pass} />}
+      {pass && (
+        <button
+          className="input__show-pass"
+          type="button"
+          onClick={pass}
+          aria-label="Посмотреть пароль"
+        />
+      )}
       {name.includes('filters-payrate') && (
         <span className="input__filters-text">{name.includes('from') ? 'от' : 'до'}</span>
       )}

@@ -1,10 +1,12 @@
 .profile {
-  display: flex;
+  display: grid;
   padding: 24px 100px 50px;
-  column-gap: 20px;
+  column-gap: 32px;
+  grid-template-columns: 295px 1fr;
 }
 
 .profile_block {
+  width: 100%;
   box-sizing: border-box;
   align-self: start;
   border: 1px solid #c6c6c6;
@@ -14,7 +16,7 @@
 
 .profile__separate-line {
   height: 1px;
-  background: #eef0ff;
+  background: #c6c6c6;
 }
 
 /* --- ЛЕВАЯ КОЛОНКА --- */
@@ -29,11 +31,10 @@
   position: relative;
   display: flex;
   width: 100%;
-  max-width: 289px;
   box-sizing: border-box;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: 23px;
   row-gap: 8px;
 }
 
@@ -63,7 +64,7 @@
 
 .profile__form-container {
   width: 100%;
-  padding: 40px;
+  padding: 27px 23px;
 }
 
 .form-profile {
@@ -89,10 +90,19 @@
   color: #3f3f3f;
   font-size: 20px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .profile__title_place_aside {
   text-align: center;
+}
+
+.profile__specialization {
+  margin: 0;
+  color: #7b7b7b;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
 }
 
 .profile__main-text {
@@ -106,6 +116,7 @@
 /* --- КНОПКИ --- */
 
 .form-top-buttons {
+  padding: 0;
   border: none;
   background-color: white;
   cursor: pointer;
@@ -113,7 +124,7 @@
 }
 
 .form-top-buttons_type_cancel {
-  padding-right: 20px;
+  margin-right: 20px;
   margin-left: auto;
   color: #a8a8a8;
 }
@@ -151,11 +162,16 @@
 .form-profile__input-container {
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
+  row-gap: 16px;
 }
 
 .form-profile__input {
   padding: 12px 24px;
   border: 1px solid #c6c6c6;
   border-radius: 12px;
+}
+
+.form-profile__education {
+  display: grid;
+  row-gap: 12px;
 }

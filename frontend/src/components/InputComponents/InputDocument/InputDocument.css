@@ -11,7 +11,12 @@
   border-radius: 12px;
   background-color: #c6c6c6;
   grid-template-rows: 2.2fr 1fr;
-  transition: all 0.3s;
+  transition: background-color 0.3s;
+}
+
+.input-doc__real-input:has(> .input-doc__fake-input:focus-visible) {
+  outline: 2px solid #86a8df;
+  outline-offset: 1px;
 }
 
 .input-doc__real-input:hover:not(:has(input:disabled)) {

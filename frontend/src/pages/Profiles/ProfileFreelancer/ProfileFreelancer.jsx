@@ -1,10 +1,9 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { Context } from '../../../context/context';
-import { industryAndCategoryOptions, degreeOptions } from '../../../utils/constants';
+import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import * as Api from '../../../utils/Api';
+import { industryAndCategoryOptions, degreeOptions } from '../../../utils/constants';
 import { InputTags } from '../../../components/InputComponents/InputTags/InputTags';
 import { InputDocument } from '../../../components/InputComponents/InputDocument/InputDocument';
 import { InputSelect } from '../../../components/InputComponents/InputSelect/InputSelect';
@@ -13,102 +12,24 @@ import { InputImage } from '../../../components/InputComponents/InputImage/Input
 import { Button } from '../../../components/Button/Button';
 import { InputSwitch } from '../../../components/InputComponents/InputSwitch/InputSwitch';
 import '../../../components/FormComponents/FreelancerCompleteForm/FreelancerCompleteForm.css';
-import './ProfileFreelancer.css';
 import '../Profile.css';
-
-// const MAX_ATTACHED_DOCS = 8;
+import './ProfileFreelancer.css';
 
 function ProfileFreelancer({ setCurrentUser }) {
   const { currentUser } = useContext(Context);
-  const { values, errors, handleChange, handleChangeCustom } = useFormAndValidation();
+  const { values, errors, setErrors, handleChange, handleChangeCustom } = useFormAndValidation();
   const [isEditable, setIsEditable] = useState(false);
   const [tags, setTags] = useState(currentUser?.stacks?.map((object) => object.name) || []);
   const [photo, setPhoto] = useState();
-  const [diploma, setDiploma] = useState();
-  const [portfolio, setPortfolio] = useState();
-
-  // const [docKeysEdu, setDocKeysEdu] = useState([...currentUser.education[0]?.diploma?.map((element) => element.id), Date.now()] || [Date.now()]);
-  // const [docKeysEdu, setDocKeysEdu] = useState(() => {
-  //   const education = currentUser?.education[0];
-  //   const diplomaIds = education?.diploma?.map((element) => element.id) || [];
-  //   return [...diplomaIds, Date.now()];
-  // });
-  // const [docKeysPortfolio, setDocKeysPortfolio] = useState([...currentUser.portfolio?.map((element) => element.id), Date.now()] || [Date.now()]);
-
-  // const handleDocEduChange = (event) => {
-  //   handleChange(event);
-  //   if (event.currentTarget.files[0]) {
-  //     setDocKeysEdu(prevKeys => [...prevKeys, Date.now()]);
-  //   }
-  // };
-  //
-  // const onDeleteDocEduClick = (key) => {
-  //   setDocKeysEdu(prevKeys => prevKeys.filter(prevKey => prevKey !== key));
-  // }
-  //
-  // const handleDocPortfolioChange = (event) => {
-  //   handleChange(event);
-  //   if (event.currentTarget.files[0]) {
-  //     setDocKeysPortfolio(prevKeys => [...prevKeys, Date.now()]);
-  //   }
-  // };
-  //
-  // const onDeleteDocPortfolioClick = (key) => {
-  //   setDocKeysPortfolio(prevKeys => prevKeys.filter(prevKey => prevKey !== key));
-  // }
+  const [diploma, setDiploma] = useState(currentUser?.education[0]?.diploma || []);
+  const [portfolio, setPortfolio] = useState(currentUser?.portfolio || []);
 
   function handleAvatar(file) {
     setPhoto({ file });
   }
 
-  function handleDiploma(files) {
-    setDiploma(files);
-  }
-
-  function handlePortfolio(files) {
-    setPortfolio(files);
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
-
-    // if (currentUser.education[0]) {}
-
-    // setValues({
-    // user: {
-    //   first_name: currentUser?.user?.first_name,
-    //   last_name: currentUser?.user?.last_name
-    // },
-    // stacks: currentUser?.stacks,
-    // categories: [{
-    //   name: currentUser?.categories[0]?.name
-    // }],
-    //   education: [{
-    //     diploma: [{
-    //       file: currentUser?.education[0]?.diploma[0]?.file,
-    //       name: currentUser?.education[0]?.diploma[0]?.name
-    //     }],
-    //     name: currentUser?.education[0]?.name,
-    //     faculty: currentUser?.education[0]?.faculty,
-    //     start_year: currentUser?.education[0]?.start_year,
-    //     finish_year: currentUser?.education[0]?.finish_year,
-    //     degree: currentUser?.education[0]?.degree
-    //   }],
-    // })
-
-    // let newErrors = {};
-
-    // if (!values.name) {
-    //   newErrors = {...newErrors, name: 'Введите название компании'};
-    // }
-
-    // setErrors({ ...errors, ...newErrors });
-
-    // if (
-    //   isValid
-    //   // && values.name
-    //   // && values.email
-    // ) {
 
     const newData = {
       user: {
@@ -128,23 +49,16 @@ function ProfileFreelancer({ setCurrentUser }) {
     };
 
     const isEdu =
-      diploma?.file &&
-      diploma?.name &&
+      diploma.length > 0 &&
       values?.education &&
       values?.faculty &&
       values?.start_year &&
       values?.finish_year &&
       values?.degree;
-
     if (isEdu) {
       newData.education = [
         {
-          diploma: [
-            {
-              file: diploma?.file || currentUser?.education[0]?.diploma[0]?.file,
-              name: diploma?.name || currentUser?.education[0]?.diploma[0]?.name,
-            },
-          ],
+          diploma,
           name: values?.education || currentUser?.education[0]?.name,
           faculty: values?.faculty || currentUser?.education[0]?.faculty,
           start_year: values?.start_year || currentUser?.education[0]?.start_year,
@@ -154,7 +68,13 @@ function ProfileFreelancer({ setCurrentUser }) {
       ];
     }
 
-    if (values?.phone || values?.email || values?.telegram || values?.preferred) {
+    if (
+      values?.phone ||
+      values?.email ||
+      values?.telegram ||
+      values?.otherContact ||
+      values?.preferred
+    ) {
       newData.contacts = newData.contacts || [];
 
       if (values?.phone || currentUser.contacts.find((item) => item.type === 'phone')) {
@@ -178,15 +98,21 @@ function ProfileFreelancer({ setCurrentUser }) {
           preferred: values?.preferred === 'telegram',
         });
       }
+      if (values?.otherContact || currentUser.contacts.find((item) => item.type === 'other')) {
+        newData.contacts.push({
+          type: 'other',
+          value:
+            values?.otherContact ||
+            currentUser.contacts.find((item) => item.type === 'other')?.value,
+          preferred: values?.preferred === 'otherContact',
+        });
+      }
     }
 
-    if (portfolio && portfolio[0]?.file && portfolio[0]?.name) {
-      newData.portfolio = [
-        {
-          file: portfolio[0]?.file,
-          name: portfolio[0]?.name,
-        },
-      ];
+    if (portfolio.length > 0) {
+      newData.portfolio = portfolio.map(({ file, name }) => ({ file, name }));
+    } else if (portfolio.length === 0 && currentUser?.portfolio !== portfolio) {
+      newData.portfolio = [];
     }
 
     Api.updateUserProfile(newData)
@@ -197,7 +123,6 @@ function ProfileFreelancer({ setCurrentUser }) {
       .catch((error) => {
         console.error(error);
       });
-    // }
   }
 
   return (
@@ -223,17 +148,13 @@ function ProfileFreelancer({ setCurrentUser }) {
           <h2 className="profile__title profile__title_place_aside">
             {currentUser.user?.first_name} {currentUser.user?.last_name}
           </h2>
-          <p className="profile__main-text">Фрилансер</p>
+          <p className="profile__specialization">Фрилансер</p>
         </div>
-
-        <div className="profile__separate-line" />
 
         <div className="profile_block profile__setting ">
           <h3 className="profile__title">Настройки</h3>
           <div className="profile__separate-line" />
-          <Link className="profile__main-text" to="#">
-            Информация
-          </Link>
+          <p className="profile__main-text">Информация</p>
         </div>
       </div>
 
@@ -248,7 +169,7 @@ function ProfileFreelancer({ setCurrentUser }) {
                   className="form-top-buttons form-top-buttons_type_cancel"
                   type="button"
                 >
-                  Отмена
+                  Отменить
                 </button>
                 <button type="submit" className="form-top-buttons form-top-buttons_type_submit">
                   Сохранить
@@ -285,7 +206,7 @@ function ProfileFreelancer({ setCurrentUser }) {
           <h2 className="profile__title">Информация о профиле</h2>
           <div className="form-profile__input-container">
             <label className="profile__main-text" htmlFor="firstName">
-              Имя Фамилия
+              Имя
             </label>
             <InputText
               type="text"
@@ -299,13 +220,18 @@ function ProfileFreelancer({ setCurrentUser }) {
               id="firstName"
               isDisabled={!isEditable}
             />
+          </div>
+
+          <div className="form-profile__input-container">
+            <label className="profile__main-text" htmlFor="lastName">
+              Фамилия
+            </label>
             <InputText
               type="text"
               placeholder="Фамилия"
               autoComplete="family-name"
               name="last_name"
               width="100%"
-              marginTop={12}
               value={values.last_name || currentUser.user?.last_name || ''}
               error={errors.last_name}
               onChange={handleChange}
@@ -367,7 +293,7 @@ function ProfileFreelancer({ setCurrentUser }) {
               placeholder="Расскажите о себе как о специалисте и чем вы можете быть полезны"
               name="about"
               width="100%"
-              height={60}
+              height={150}
               value={values.about || currentUser?.about || ''}
               error={errors.about}
               onChange={handleChange}
@@ -378,96 +304,89 @@ function ProfileFreelancer({ setCurrentUser }) {
 
           <div className="form-profile__input-container">
             <h2 className="profile__main-text">Образование</h2>
-            <InputText
-              type="text"
-              placeholder="Учебное заведение"
-              name="education"
-              width="100%"
-              value={
-                values.education || currentUser?.education ? currentUser?.education[0]?.name : ''
-              }
-              error={errors.education}
-              onChange={handleChange}
-              id="education"
-              isDisabled={!isEditable}
-            />
-
-            <div className="form-profile__dates">
+            <div className="form-profile__education">
               <InputText
-                type="number"
-                placeholder="Начало учёбы"
-                name="start_year"
+                type="text"
+                placeholder="Учебное заведение"
+                name="education"
                 width="100%"
                 value={
-                  values.start_year || currentUser?.education
-                    ? currentUser?.education[0]?.start_year
-                    : ''
+                  values.education || currentUser?.education ? currentUser?.education[0]?.name : ''
                 }
-                error={errors.start_year}
+                error={errors.education}
+                onChange={handleChange}
+                id="education"
+                isDisabled={!isEditable}
+              />
+
+              <div className="form-profile__dates">
+                <InputText
+                  type="number"
+                  placeholder="Начало учёбы"
+                  name="start_year"
+                  width="100%"
+                  value={
+                    values.start_year || currentUser?.education
+                      ? currentUser?.education[0]?.start_year
+                      : ''
+                  }
+                  error={errors.start_year}
+                  onChange={handleChange}
+                  isDisabled={!isEditable}
+                />
+                <InputText
+                  type="number"
+                  placeholder="Окончание учёбы"
+                  name="finish_year"
+                  width="100%"
+                  value={
+                    values.finish_year || currentUser?.education
+                      ? currentUser?.education[0]?.finish_year
+                      : ''
+                  }
+                  error={errors.finish_year}
+                  onChange={handleChange}
+                  isDisabled={!isEditable}
+                />
+              </div>
+
+              <InputSelect
+                name="degree"
+                options={degreeOptions}
+                placeholder="Степень"
+                width="100%"
+                value={
+                  values.degree || currentUser?.education ? currentUser?.education[0]?.degree : ''
+                }
                 onChange={handleChange}
                 isDisabled={!isEditable}
               />
+
               <InputText
-                type="number"
-                placeholder="Окончание учёбы"
-                name="finish_year"
+                type="text"
+                placeholder="Факультет"
+                name="faculty"
                 width="100%"
                 value={
-                  values.finish_year || currentUser?.education
-                    ? currentUser?.education[0]?.finish_year
-                    : ''
+                  values.faculty || currentUser?.education ? currentUser?.education[0]?.faculty : ''
                 }
-                error={errors.finish_year}
+                error={errors.faculty}
                 onChange={handleChange}
+                id="faculty"
                 isDisabled={!isEditable}
               />
             </div>
-
-            <InputSelect
-              name="degree"
-              options={degreeOptions}
-              placeholder="Степень"
-              width="100%"
-              value={
-                values.degree || currentUser?.education ? currentUser?.education[0]?.degree : ''
-              }
-              onChange={handleChange}
-              isDisabled={!isEditable}
-            />
-
-            <InputText
-              type="text"
-              placeholder="Факультет"
-              name="faculty"
-              width="100%"
-              value={
-                values.faculty || currentUser?.education ? currentUser?.education[0]?.faculty : ''
-              }
-              error={errors.faculty}
-              onChange={handleChange}
-              id="faculty"
-              isDisabled={!isEditable}
-            />
           </div>
 
           <div className="form-profile__input-container">
             <h2 className="profile__main-text">Сертификаты, грамоты, дипломы</h2>
             <div className="freelancer-complete-form__input-doc-wrapper">
-              {/*{docKeysEdu.slice(0, MAX_ATTACHED_DOCS).map((key, index) => (*/}
-              {/*  <InputDocument key={key} name="diploma" value={values.diploma || currentUser.education[0]?.diploma[index] || ''}*/}
-              {/*            error={errors.diploma}*/}
-              {/*            onChange={(event) => handleDocEduChange(event, key)}*/}
-              {/*            onDeleteDocClick={() => onDeleteDocEduClick(key)}*/}
-              {/*            isDisabled={!isEditable}*/}
-              {/*  />*/}
-              {/*))}*/}
               <InputDocument
                 name="diploma"
-                value={
-                  values.diploma || currentUser?.education ? currentUser.education[0]?.diploma : ''
-                }
+                value={diploma}
+                setValue={setDiploma}
                 error={errors.diploma}
-                onChange={handleDiploma}
+                setErrors={setErrors}
                 isDisabled={!isEditable}
               />
             </div>
@@ -508,13 +427,15 @@ function ProfileFreelancer({ setCurrentUser }) {
                 currentUser?.contacts?.find((item) => item?.type === 'phone')?.preferred
               }
             />
+          </div>
 
+          <div className="form-profile__input-container">
             <label className="profile__main-text" htmlFor="emailForContacts">
               Эл. почта
             </label>
             <InputText
               type="email"
-              placeholder="Эл. почта"
+              placeholder="user@mail.com"
               autoComplete="email"
               name="email"
               width="100%"
@@ -547,7 +468,7 @@ function ProfileFreelancer({ setCurrentUser }) {
             </label>
             <InputText
               type="text"
-              placeholder="Телеграм"
+              placeholder="@username"
               autoComplete="telegram"
               name="telegram"
               width="100%"
@@ -574,24 +495,48 @@ function ProfileFreelancer({ setCurrentUser }) {
             />
           </div>
 
+          <div className="form-profile__input-container">
+            <label className="profile__main-text" htmlFor="otherContact">
+              Ссылка на другой сайт
+            </label>
+            <InputText
+              type="url"
+              placeholder="https://example.com"
+              name="otherContact"
+              width="100%"
+              value={
+                values.otherContact ||
+                currentUser?.contacts?.find((item) => item?.type === 'other')?.value ||
+                ''
+              }
+              error={errors.otherContact}
+              onChange={handleChange}
+              isDisabled={!isEditable}
+            />
+            <InputSwitch
+              type="radio"
+              name="preferred"
+              label="Предпочтительный вид связи"
+              value="otherContact"
+              onChange={handleChange}
+              isDisabled={!isEditable}
+              defaultChecked={
+                currentUser?.contacts?.find((item) => item?.type === 'other')?.preferred
+              }
+            />
+          </div>
+
           <div className="profile__separate-line" />
 
           <div className="form-profile__input-container">
             <h2 className="profile__title">Портфолио</h2>
             <div className="freelancer-complete-form__input-doc-wrapper">
-              {/*{docKeysPortfolio.slice(0, MAX_ATTACHED_DOCS).map((key, index) => (*/}
-              {/*  <InputDocument key={key} name="portfolio" value={values.portfolio || currentUser?.portfolio[index] || ''}*/}
-              {/*            error={errors.portfolio}*/}
-              {/*            onChange={(event) => handleDocPortfolioChange(event, key)}*/}
-              {/*            onDeleteDocClick={() => onDeleteDocPortfolioClick(key)}*/}
-              {/*            isDisabled={!isEditable}*/}
-              {/*  />*/}
-              {/*))}*/}
               <InputDocument
                 name="portfolio"
-                value={values.portfolio || currentUser?.portfolio || ''}
+                value={portfolio}
+                setValue={setPortfolio}
                 error={errors.portfolio}
-                onChange={handlePortfolio}
+                setErrors={setErrors}
                 isDisabled={!isEditable}
               />
             </div>
@@ -617,18 +562,12 @@ function ProfileFreelancer({ setCurrentUser }) {
           {isEditable && (
             <div className="form-profile__bottom-buttons-container">
               <Button
-                text="Отмена"
+                text="Отменить"
                 buttonSecondary
                 width={289}
-                type="button"
                 onClick={() => setIsEditable(false)}
               />
-              <button
-                type="submit"
-                className="profile__main-text form-profile__bottom-buttons form-profile__bottom-buttons_type_submit"
-              >
-                Сохранить
-              </button>
+              <Button text="Сохранить" width={289} type="submit" />
             </div>
           )}
         </form>

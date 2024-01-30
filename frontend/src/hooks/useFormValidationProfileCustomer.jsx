@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function useFormAndValidation() {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
   const [isValid, setIsValid] = useState(false);
+
+  // useEffect(() => {
+  //   console.log(values);
+  // }, [values]);
 
   function checkErrors(errors) {
     return Object.values(errors).every((error) => error === '');

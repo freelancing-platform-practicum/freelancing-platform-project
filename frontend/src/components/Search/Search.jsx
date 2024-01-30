@@ -24,7 +24,7 @@ function Search({ setSearchQuery }) {
     <section className="search">
       <form className="search__form" onSubmit={handleFormSubmit}>
         <div className="search__container">
-          <button type="submit" className="search__button">
+          <button type="submit" className="search__button" aria-label="Найти">
             <div className="search__search-image" />
           </button>
           <input

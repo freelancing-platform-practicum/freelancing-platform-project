@@ -45,8 +45,13 @@ function Filters({ searchQuery, setSearchQuery, marginTop, isFirstTab }) {
     setBudgetEnd('');
     setSelectedCategories([]);
     setSearchQuery('');
-    // navigate('/');
     resetForm();
+    // navigate('/');
+    const urlParameters = new URLSearchParams(location.search);
+    urlParameters.delete('category');
+    urlParameters.delete('min_budget');
+    urlParameters.delete('max_budget');
+    navigate(`?${urlParameters.toString()}`);
   }
 
   function handleBudgetStart({ target: { value } }) {
@@ -183,7 +188,13 @@ function Filters({ searchQuery, setSearchQuery, marginTop, isFirstTab }) {
       </div>
       <div className="filters-buttons">
         <Button text="Применить фильтры" width={289} onClick={handleFilter} />
-        <Button text="Очистить фильтры" width={289} buttonSecondary onClick={handleReset} />
+        <Button
+          text="Очистить фильтры"
+          width={289}
+          buttonSecondary
+          type="reset"
+          onClick={handleReset}
+        />
       </div>
     </section>
   );

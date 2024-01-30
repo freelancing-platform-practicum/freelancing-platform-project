@@ -16,11 +16,11 @@ function InputSelect({
   return (
     <div className="select-container">
       <select
-        className={`select${value === '' ? ' select_type_placeholder' : ''}${
+        className={`select${value === undefined ? ' select_type_placeholder' : ''}${
           error ? ' select_type_error' : ''
         }`}
         name={name}
-        value={value}
+        defaultValue={value}
         onChange={onChange}
         style={{ width, margin }}
         disabled={isDisabled}

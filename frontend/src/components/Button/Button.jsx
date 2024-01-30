@@ -9,7 +9,7 @@ function Button({
   buttonSecondary,
   buttonBlack,
   buttonWhite,
-  type,
+  type = 'button',
   onClick,
   disabled,
   border,

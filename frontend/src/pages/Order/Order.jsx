@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { shallowEqualObjects } from 'shallow-equal';
 import { Context } from '../../context/context';
+import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustomer';
 import * as Api from '../../utils/Api';
 import { industryAndCategoryOptions } from '../../utils/constants';
 import { InputDocument } from '../../components/InputComponents/InputDocument/InputDocument';
@@ -11,7 +12,6 @@ import { InputTags } from '../../components/InputComponents/InputTags/InputTags'
 import { InputText } from '../../components/InputComponents/InputText/InputText';
 import { InputSelect } from '../../components/InputComponents/InputSelect/InputSelect';
 import { InputSwitch } from '../../components/InputComponents/InputSwitch/InputSwitch';
-import { useFormAndValidation } from '../../hooks/useFormValidationProfileCustomer';
 import '../../components/FormComponents/CreateTaskForm/CreateTaskForm.css';
 import '../ForgotPass/ForgotPass.css';
 import '../Profiles/ProfileFreelancerViewOnly/ProfileFreelancerViewOnly.css';
@@ -20,23 +20,21 @@ import '../Profiles/Profile.css';
 import './Order.css';
 
 function Order() {
-  const { values, errors, handleChange, handleChangeCustom, setValues, setErrors, resetForm } =
-    useFormAndValidation();
-  const [isEditable, setIsEditable] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { currentUser } = useContext(Context);
-  const { id } = useParams();
   const [order, setOrder] = useState({});
-  const [document, setDocument] = useState();
-  const navigate = useNavigate();
+  const [portfolioFiles, setPortfolioFiles] = useState(order?.job_files || []);
   const [error, setError] = useState('');
   const [tags, setTags] = useState([]);
+  const [isEditable, setIsEditable] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isChecked, setIsChecked] = useState({
     budgetDiscussion: false,
     deadlineDiscussion: false,
   });
-  // const [budget, setBudget] = useState('');
-  // const [deadline, setDeadline] = useState('');
+  const { currentUser } = useContext(Context);
+  const { values, errors, handleChange, handleChangeCustom, setValues, setErrors, resetForm } =
+    useFormAndValidation();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const response = useRef();
 
   useEffect(() => {
@@ -105,7 +103,7 @@ function Order() {
       deadlineDiscussion: isChecked.deadlineDiscussion,
       // orderId: Math.floor(Math.random() * 100) + 1,
       // orderCreationDate: new Date().toString().split(':').slice(0, 2).join(':'),
-      // file: document,
+      // file: portfolioFiles,
     };
 
     if (values?.activity?.length > 0) {
@@ -127,8 +125,8 @@ function Order() {
       allValues.deadline = values?.deadline ? values.deadline : order?.deadline;
     }
 
-    if (document) {
-      allValues.file = document;
+    if (portfolioFiles) {
+      allValues.file = portfolioFiles;
     }
 
     const formValues = {
@@ -187,10 +185,6 @@ function Order() {
     </li>
   ));
   // -----------
-
-  function addDocument(items) {
-    setDocument(items);
-  }
 
   return (
     (currentUser.is_worker || currentUser?.id === order?.client?.id) && (
@@ -327,10 +321,10 @@ function Order() {
                       <div className="create-task-form__input-doc-wrapper">
                         <InputDocument
                           name="portfolio"
-                          value={values?.portfolio || order?.job_files || ''}
+                          value={portfolioFiles}
+                          setValue={setPortfolioFiles}
                           error={errors.portfolio}
                           setErrors={setErrors}
-                          onChange={addDocument}
                         />
                       </div>
                     </div>
@@ -341,7 +335,7 @@ function Order() {
                         className="profile__main-text form-profile__bottom-buttons"
                         onClick={handleCancel}
                       >
-                        Отмена
+                        Отменить
                       </button>
                       <button
                         type="submit"
@@ -423,7 +417,6 @@ function Order() {
             <div className="profile_left-column">
               {currentUser?.is_worker ? (
                 <Button
-                  type="button"
                   text={order.is_responded ? 'Просмотреть отклик' : 'Откликнуться'}
                   width={289}
                   className="form-profile__bottom-buttons form-profile__bottom-buttons_type_submit"
@@ -432,7 +425,6 @@ function Order() {
               ) : (
                 <>
                   <Button
-                    type="button"
                     text="Отклики"
                     width={289}
                     className="form-profile__bottom-buttons form-profile__bottom-buttons_type_submit"
@@ -440,7 +432,6 @@ function Order() {
                   />
                   {!isEditable && (
                     <Button
-                      type="button"
                       text="Редактировать заказ"
                       width={289}
                       buttonSecondary={true}
@@ -451,7 +442,6 @@ function Order() {
                     />
                   )}
                   <Button
-                    type="button"
                     text="Удалить заказ"
                     width={289}
                     buttonSecondary={true}
@@ -521,7 +511,6 @@ function Order() {
                 onClick={handleDeleteTask}
               />
               <Button
-                type="button"
                 text="Отменить"
                 buttonSecondary={true}
                 width={289}

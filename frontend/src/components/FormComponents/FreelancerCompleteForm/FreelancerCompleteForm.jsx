@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
+import { Context } from '../../../context/context';
 import { useFormAndValidation } from '../../../hooks/useFormValidationProfileCustomer';
 import { industryAndCategoryOptions, degreeOptions } from '../../../utils/constants';
 import { InputText } from '../../InputComponents/InputText/InputText';
@@ -8,32 +9,21 @@ import { InputTags } from '../../InputComponents/InputTags/InputTags';
 import { InputSelect } from '../../InputComponents/InputSelect/InputSelect';
 import { InputSwitch } from '../../InputComponents/InputSwitch/InputSwitch';
 import { Button } from '../../Button/Button';
-import { Context } from '../../../context/context';
 import './FreelancerCompleteForm.css';
 
 function FreelancerCompleteForm({ onSubmit }) {
-  const { currentUser } = useContext(Context);
   const [profilePhoto, setProfilePhoto] = useState({});
-  const [portfolioFile, setPortfolioFile] = useState();
-  const [document, setDocument] = useState();
-  // const [docKeysPortfolio, setDocKeysPortfolio] = useState([Date.now()]);
-  const {
-    values,
-    errors,
-    handleChange,
-    handleChangeCustom,
-    setErrors,
-    setValues,
-    // checkErrors,
-    // setIsValid,
-    isValid,
-  } = useFormAndValidation();
+  const [portfolioFiles, setPortfolioFiles] = useState([]);
+  const [diplomaFiles, setDiplomaFiles] = useState([]);
   const [tags, setTags] = useState([]);
+  const { currentUser } = useContext(Context);
+  const { values, errors, handleChange, handleChangeCustom, setErrors, setValues, isValid } =
+    useFormAndValidation();
 
   useEffect(() => {
     setTags([]);
-    setDocument({});
-    setPortfolioFile({});
+    setDiplomaFiles({});
+    setPortfolioFiles({});
     setProfilePhoto({});
     setValues({});
     setValues({
@@ -43,30 +33,14 @@ function FreelancerCompleteForm({ onSubmit }) {
     });
   }, [currentUser]);
 
-  /*
-  useEffect(() => {
-    const valid = checkErrors(errors)
-    setIsValid(valid)
-  }, [isValid, errors])
-*/
+  // useEffect(() => {
+  //   const valid = checkErrors(errors)
+  //   setIsValid(valid)
+  // }, [isValid, errors])
+
   function addProfilePhoto(url) {
     setProfilePhoto({ photo: url });
-    // console.log(url);
   }
-
-  function addPortfolioFile(files) {
-    // console.log(files);
-    setPortfolioFile({ files });
-  }
-
-  function addDocument(files) {
-    // console.log(files);
-    setDocument({ files });
-  }
-  // console.log(document?.files, document?.files?.length);
-
-  // console.log(document?.file?.file)
-  // console.log(isValid)
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -101,13 +75,13 @@ function FreelancerCompleteForm({ onSubmit }) {
       values.start_year ||
       values.finish_year ||
       values.degree ||
-      document?.files?.length
+      diplomaFiles?.files?.length
     ) {
       allValues.education = [];
       let educationValues = {};
 
-      if (document?.files?.length) {
-        educationValues.diploma = document.files;
+      if (diplomaFiles?.files?.length) {
+        educationValues.diploma = diplomaFiles.files;
       }
       if (values.education) {
         educationValues.name = values.education;
@@ -181,8 +155,8 @@ function FreelancerCompleteForm({ onSubmit }) {
       allValues.photo = profilePhoto.photo;
     }
 
-    if (portfolioFile.files) {
-      allValues.portfolioFile = portfolioFile.files;
+    if (portfolioFiles.files) {
+      allValues.portfolioFile = portfolioFiles.files;
     }
 
     if (values.payrate) {
@@ -364,17 +338,13 @@ function FreelancerCompleteForm({ onSubmit }) {
       <div>
         <p className="freelancer-complete-form__input-text">Примеры работ, портфолио</p>
         <div className="freelancer-complete-form__input-doc-wrapper">
-          {/*{docKeysPortfolio.slice(0, MAX_ATTACHED_DOCS).map((key) => (*/}
           <InputDocument
             name="portfolio"
-            value={values.portfolio || ''}
+            value={portfolioFiles}
+            setValue={setPortfolioFiles}
             error={errors.portfolio}
-            onChange={addPortfolioFile}
-            // isDisabled={false}
-            // onChange={(event) => handleDocPortfolioChange(event, key)} key={key}
-            // onDeleteDocClick={() => onDeleteDocPortfolioClick(key)}
+            setErrors={setErrors}
           />
-          {/*))}*/}
         </div>
       </div>
 
@@ -457,9 +427,10 @@ function FreelancerCompleteForm({ onSubmit }) {
         <div className="freelancer-complete-form__input-doc-wrapper">
           <InputDocument
             name="diploma"
-            value={values.diploma || ''}
+            value={diplomaFiles}
+            setValue={setDiplomaFiles}
             error={errors.diploma}
-            onChange={addDocument}
+            setErrors={setErrors}
           />
         </div>
       </div>

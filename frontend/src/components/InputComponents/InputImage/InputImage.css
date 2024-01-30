@@ -10,6 +10,11 @@
   background-size: 21px;
 }
 
+.input-image__real-input:has(> .input-image__fake-input:focus-visible) {
+  outline: 2px solid #86a8df;
+  outline-offset: 1px;
+}
+
 .input-image__real-input:hover:not(:has(input:disabled)) {
   background-color: #7b7b7b;
   cursor: pointer;

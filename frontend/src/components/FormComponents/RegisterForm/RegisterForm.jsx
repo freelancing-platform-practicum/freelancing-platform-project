@@ -128,7 +128,6 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
             text="Я заказчик"
             width={200}
             height={52}
-            type="button"
             buttonSecondary
             border="none"
             fontSize={20}
@@ -141,7 +140,6 @@ function RegisterForm({ onSubmitHandler, errorRequest, isError }) {
             text="Я фрилансер"
             width={200}
             height={52}
-            type="button"
             buttonSecondary
             border="none"
             fontSize={20}

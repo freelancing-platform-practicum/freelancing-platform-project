@@ -120,7 +120,6 @@ function ProfileFreelancerViewOnly({
             </div>
 
             <Button
-              type="button"
               text="Нанять"
               width={289}
               onClick={() => setIsPopupOpen(true)}
@@ -144,8 +143,6 @@ function ProfileFreelancerViewOnly({
             <div className="form-profile__input-container">
               <h3 className="profile__main-text">Портфолио</h3>
               <div className="profile__file-container">
-                {/*<div className="profile__file" />*/}
-                {/*<div className="profile__file" />*/}
                 <InputDocument
                   name="portfolio"
                   value={freelancer?.portfolio || ''}
@@ -202,6 +199,7 @@ function ProfileFreelancerViewOnly({
                     setPopupError('');
                   }}
                   className="form-message__close-button"
+                  aria-label="Закрыть всплывающее окно"
                 />
                 <InputSelect
                   name="categories"
@@ -246,6 +244,7 @@ function ProfileFreelancerViewOnly({
                   setIsPopupOpen(false);
                 }}
                 className="form-message__close-button"
+                aria-label="Закрыть всплывающее окно"
               />
               <div className="popup-message__image" />
               <h2 className="profile__title popup__title" style={{ marginBottom: 16 }}>
