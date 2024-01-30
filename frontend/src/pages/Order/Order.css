@@ -1,5 +1,6 @@
 .order {
   flex-direction: column;
+  grid-template-columns: auto;
 }
 
 .order_block {
