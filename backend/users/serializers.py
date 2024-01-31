@@ -42,6 +42,7 @@ class UserCreateSerializer(
             raise serializers.ValidationError(
                 'Нужно выбрать \'Фрилансер\' или \'Заказчик\''
             )
+        data['email'] = data['email'].lower()
         return super().validate(data)
 
 
